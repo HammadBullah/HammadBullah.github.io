@@ -3,7 +3,17 @@
 @tailwind utilities;
 
 body {
-  background: black;
-  color: white;
-  font-family: 'Inter', sans-serif;
+  @apply bg-black text-white overflow-x-hidden;
+}
+
+/* soft futuristic glow background */
+.glow-bg {
+  position: fixed;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(0,255,255,0.15), transparent 60%);
+  top: -100px;
+  left: -100px;
+  filter: blur(80px);
+  z-index: 0;
 }
