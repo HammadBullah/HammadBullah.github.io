@@ -653,56 +653,15 @@ const skills = [
 
       <ParticleField />
 
-     {/* NAV - Mobile Optimized */}
+     {/* NAV */}
       <nav className="fixed top-0 w-full z-50 px-6 py-5 flex justify-between items-center border-b border-[#112211] bg-black/90 backdrop-blur-xl">
         <span className="text-xs tracking-[0.3em] font-bold neon-text">HS://PORTFOLIO</span>
-
-        <div className="flex items-center gap-5">
-          {/* Theme Toggle */}
-          <div
-            onClick={toggleTheme}
-            className="w-12 h-6 bg-gray-700 rounded-full relative cursor-pointer flex items-center px-1"
-          >
-            <motion.div
-              animate={{ x: isDark ? 0 : 24 }}
-              className="w-4 h-4 bg-[#39ff88] rounded-full shadow"
-            />
-          </div>
-
-          {/* Hamburger Menu */}
-          <button
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="lg:hidden text-2xl"
-          >
-            {isMenuOpen ? '✕' : '☰'}
-          </button>
-        </div>
-
-        {/* Desktop Nav */}
-        <div className="hidden lg:flex gap-6 text-xs tracking-widest">
+        <div className=" gap-6 text-xs tracking-[0.2em] hidden md:flex">
           {sectionList.slice(1).map(s => (
-            <a key={s.id} href={`#${s.id}`} className="nav-link hover:text-white transition-colors">
-              {s.label}
-            </a>
+            <a key={s.id} href={`#${s.id}`} className="nav-link">{s.label}</a>
           ))}
         </div>
       </nav>
-
-      {/* Mobile Menu */}
-      {isMenuOpen && (
-        <div className="lg:hidden fixed inset-0 z-50 bg-black/95 flex flex-col items-center justify-center gap-8 text-xl">
-          {sectionList.slice(1).map(s => (
-            <a
-              key={s.id}
-              href={`#${s.id}`}
-              onClick={() => setIsMenuOpen(false)}
-              className="text-white hover:text-[#39ff88] transition-colors"
-            >
-              {s.label}
-            </a>
-          ))}
-        </div>
-      )}
 
       {/* HERO */}
       <section className="section relative z-10 h-screen flex items-center justify-center text-center px-6 overflow-hidden">
@@ -844,7 +803,7 @@ const skills = [
 </section>
 
       {/* CONTACT */}
-      <section id="contact" className="section relative z-20 h-screen flex items-center justify-center text-center py-28 px-6 md:px-24 text-center">
+      <section id="contact" className="section relative z-20 h-screen flex items-center justify-center py-28 px-6 md:px-24 text-center">
         <Hero3D mouse={{ current: cursorPos || { x: 0, y: 0 } }} />
         <ScrollIndicator sections={sectionList} />
         <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={stagger}>
