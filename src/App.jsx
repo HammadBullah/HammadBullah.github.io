@@ -519,7 +519,7 @@ function MainSite({ cursorPos }) {
             MSc Advanced Computer Science · University of Hertfordshire · Hatfield, UK
           </motion.p>
           <motion.div variants={fadeUp} className="flex justify-center gap-4 flex-wrap">
-            {[["VIEW PROJECTS", "#projects", true], ["MY CV", "#contact", false], ["CONTACT", "#contact", false]].map(([label, href, primary]) => (
+            {[["VIEW PROJECTS", "#projects", true], ["CONTACT", "#contact", false]].map(([label, href, primary]) => (
               <a key={label} href={href}
                 className="px-7 py-3 text-xs tracking-widest transition-all"
                 style={{ border: `1px solid ${primary ? "#39ff88" : "#0f8f4f"}`, color: primary ? "#39ff88" : "#0f8f4f" }}
