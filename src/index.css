@@ -3,17 +3,31 @@
 @tailwind utilities;
 
 body {
-  @apply bg-black text-white overflow-x-hidden;
+  @apply bg-black text-white overflow-x-hidden m-0 p-0;
 }
 
-/* soft futuristic glow background */
-.glow-bg {
-  position: fixed;
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(circle, rgba(0,255,255,0.15), transparent 60%);
-  top: -100px;
-  left: -100px;
-  filter: blur(80px);
-  z-index: 0;
+/* Custom Cursor styles */
+.cursor-dot {
+  @apply pointer-events-none fixed z-[9999] rounded-full mix-blend-difference;
+  background-color: white;
+}
+
+.cursor-outline {
+  @apply pointer-events-none fixed z-[9998] rounded-full border border-white transition-all duration-150 ease-out mix-blend-difference;
+}
+
+/* Hide default cursor */
+* {
+  cursor: none !important;
+}
+
+/* Custom Scrollbar B&W */
+::-webkit-scrollbar {
+  width: 5px;
+}
+::-webkit-scrollbar-track {
+  background: #000;
+}
+::-webkit-scrollbar-thumb {
+  background: #fff;
 }
