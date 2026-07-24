@@ -1,9 +1,21 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --background: 0 0% 2%;
+  --foreground: 0 0% 98%;
+}
+
 body {
-  @apply bg-black text-white overflow-x-hidden m-0 p-0;
+  @apply bg-[#050505] text-white overflow-x-hidden m-0 p-0 antialiased;
+  font-family: 'Inter', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Space Grotesk', sans-serif;
 }
 
 /* Custom Cursor styles */
@@ -17,9 +29,9 @@ body {
 }
 
 /* Hide default cursor */
-* {
+/* * {
   cursor: none !important;
-}
+} */
 
 /* Custom Scrollbar B&W */
 ::-webkit-scrollbar {
@@ -29,5 +41,17 @@ body {
   background: #000;
 }
 ::-webkit-scrollbar-thumb {
-  background: #fff;
+  background: #222;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #444;
+}
+
+.glass-card {
+  @apply bg-white/5 backdrop-blur-xl border border-white/10;
+}
+
+.text-gradient {
+  @apply text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500;
 }
