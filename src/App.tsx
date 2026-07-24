@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { motion, AnimatePresence, useScroll } from "framer-motion";
 import { useSmoothScroll } from "./hooks/useSmoothScroll";
 import { NeuralBackground } from "./components/NeuralBackground";
@@ -9,35 +9,36 @@ import { Projects } from "./sections/Projects";
 import { Skills } from "./sections/Skills";
 import { Contact } from "./sections/Contact";
 
-/* ─── LOADING SCREEN ─── */
+/* ─── NEXT-GEN LOADING SCREEN ─── */
 function LoadingScreen({ onComplete }: { onComplete: () => void }) {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
     const timer = setInterval(() => {
       setProgress((prev) => {
-        if (prev >= 100) {
+        const next = prev + Math.random() * 20;
+        if (next >= 100) {
           clearInterval(timer);
-          setTimeout(onComplete, 800);
+          onComplete();
           return 100;
         }
-        return prev + Math.random() * 20;
+        return next;
       });
-    }, 120);
+    }, 100);
     return () => clearInterval(timer);
   }, [onComplete]);
 
   return (
     <motion.div
       exit={{ y: "-100%" }}
-      transition={{ duration: 1.2, ease: [0.87, 0, 0.13, 1] }}
+      transition={{ duration: 0.8, ease: [0.87, 0, 0.13, 1] }}
       className="fixed inset-0 z-[1000] bg-white text-black flex items-center justify-center p-12"
     >
       <div className="w-full max-w-2xl overflow-hidden">
         <motion.h1 
-          initial={{ y: 100 }}
-          animate={{ y: 0 }}
-          className="text-[10vw] font-black tracking-tighter leading-none mb-12 uppercase"
+          initial={{ y: 80, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          className="text-[10vw] font-black tracking-tighter leading-none mb-12 uppercase text-black"
         >
           Initializing<br/>Sovereign.
         </motion.h1>
@@ -46,7 +47,11 @@ function LoadingScreen({ onComplete }: { onComplete: () => void }) {
           <span>{Math.round(progress)}%</span>
         </div>
         <div className="h-1 w-full bg-black/10">
-          <motion.div className="h-full bg-black" initial={{ width: 0 }} animate={{ width: `${progress}%` }} />
+          <motion.div 
+            className="h-full bg-black" 
+            initial={{ width: 0 }} 
+            animate={{ width: `${progress}%` }} 
+          />
         </div>
       </div>
     </motion.div>
@@ -65,17 +70,26 @@ export default function App() {
         {loading ? (
           <LoadingScreen key="loader" onComplete={() => setLoading(false)} />
         ) : (
-          <motion.main className="relative z-10">
-            <NeuralBackground />
+          <motion.main 
+            key="main-content"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="relative z-10"
+          >
+            <Suspense fallback={<div className="fixed inset-0 bg-black" />}>
+              <NeuralBackground />
+            </Suspense>
             
-            <HeroV9 />
+            <Suspense fallback={<div className="h-screen bg-black" />}>
+              <HeroV9 />
+            </Suspense>
+            
             <About />
             <Experience />
             <Projects />
             <Skills />
             <Contact />
             
-            {/* GLOBAL HUD PROGRESS */}
             <motion.div
               className="fixed bottom-0 left-0 right-0 h-1.5 bg-white origin-left z-[100]"
               style={{ scaleX: scrollYProgress }}
