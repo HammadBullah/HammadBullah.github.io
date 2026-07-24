@@ -2,13 +2,12 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence, useScroll } from "framer-motion";
 import { useSmoothScroll } from "./hooks/useSmoothScroll";
 import { NeuralBackground } from "./components/NeuralBackground";
-import { Hero } from "./sections/Hero";
+import { HeroV9 } from "./sections/HeroV9";
 import { About } from "./sections/About";
 import { Experience } from "./sections/Experience";
 import { Projects } from "./sections/Projects";
 import { Skills } from "./sections/Skills";
 import { Contact } from "./sections/Contact";
-import { cn } from "./lib/utils";
 
 /* ─── LOADING SCREEN ─── */
 function LoadingScreen({ onComplete }: { onComplete: () => void }) {
@@ -19,41 +18,35 @@ function LoadingScreen({ onComplete }: { onComplete: () => void }) {
       setProgress((prev) => {
         if (prev >= 100) {
           clearInterval(timer);
-          setTimeout(onComplete, 500);
+          setTimeout(onComplete, 800);
           return 100;
         }
-        return prev + Math.random() * 15;
+        return prev + Math.random() * 20;
       });
-    }, 150);
+    }, 120);
     return () => clearInterval(timer);
   }, [onComplete]);
 
   return (
     <motion.div
-      exit={{ opacity: 0, scale: 1.1 }}
-      transition={{ duration: 0.8, ease: [0.43, 0.13, 0.23, 0.96] }}
-      className="fixed inset-0 z-[1000] bg-[#050505] flex flex-col items-center justify-center p-12"
+      exit={{ y: "-100%" }}
+      transition={{ duration: 1.2, ease: [0.87, 0, 0.13, 1] }}
+      className="fixed inset-0 z-[1000] bg-white text-black flex items-center justify-center p-12"
     >
-      <div className="w-full max-w-md">
-        <div className="flex justify-between mb-4 font-mono text-[10px] tracking-widest text-blue-500">
-          <span>SYSTEM_BOOT</span>
+      <div className="w-full max-w-2xl overflow-hidden">
+        <motion.h1 
+          initial={{ y: 100 }}
+          animate={{ y: 0 }}
+          className="text-[10vw] font-black tracking-tighter leading-none mb-12 uppercase"
+        >
+          Initializing<br/>Sovereign.
+        </motion.h1>
+        <div className="flex justify-between font-mono text-xs tracking-widest mb-4">
+          <span>HS_NODE_STABLE</span>
           <span>{Math.round(progress)}%</span>
         </div>
-        <div className="h-[1px] w-full bg-white/10 overflow-hidden">
-          <motion.div
-            className="h-full bg-blue-500"
-            initial={{ width: 0 }}
-            animate={{ width: `${progress}%` }}
-          />
-        </div>
-        <div className="mt-8 text-center">
-          <motion.span
-            animate={{ opacity: [0.4, 1, 0.4] }}
-            transition={{ repeat: Infinity, duration: 1.5 }}
-            className="font-mono text-[9px] tracking-[0.5em] text-white/20 uppercase"
-          >
-            Decrypting Architectural Paradigms
-          </motion.span>
+        <div className="h-1 w-full bg-black/10">
+          <motion.div className="h-full bg-black" initial={{ width: 0 }} animate={{ width: `${progress}%` }} />
         </div>
       </div>
     </motion.div>
@@ -72,36 +65,19 @@ export default function App() {
         {loading ? (
           <LoadingScreen key="loader" onComplete={() => setLoading(false)} />
         ) : (
-          <motion.main
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1 }}
-            className="relative z-10"
-          >
+          <motion.main className="relative z-10">
             <NeuralBackground />
             
-            {/* HUD OVERLAYS */}
-            <nav className="fixed top-0 w-full z-[100] p-8 md:p-12 flex justify-between items-start mix-blend-difference pointer-events-none font-mono text-[9px] tracking-[0.4em] uppercase">
-               <div className="flex flex-col gap-2 pointer-events-auto cursor-crosshair">
-                  <span className="text-white font-black text-xl tracking-tighter">HS.</span>
-                  <span className="text-white/30 italic">v8.1.0_PROD</span>
-               </div>
-               <div className="flex flex-col items-end gap-2 text-right pointer-events-auto">
-                  <span className="text-blue-500">Node_Status: ACTIVE</span>
-                  <div className="w-12 h-0.5 bg-white/20" />
-               </div>
-            </nav>
-
-            <Hero />
+            <HeroV9 />
             <About />
             <Experience />
             <Projects />
             <Skills />
             <Contact />
             
-            {/* PROGRESS WIRE */}
+            {/* GLOBAL HUD PROGRESS */}
             <motion.div
-              className="fixed bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-purple-600 origin-left z-[100]"
+              className="fixed bottom-0 left-0 right-0 h-1.5 bg-white origin-left z-[100]"
               style={{ scaleX: scrollYProgress }}
             />
           </motion.main>

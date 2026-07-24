@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 0 0% 2%;
+  --foreground: 0 0% 98%;
+  --primary: 221 83% 53%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 262 83% 58%;
+  --accent: 25 100% 60%; /* Industrial Orange */
+  --muted: 0 0% 15%;
+  --border: 0 0% 12%;
+  --glass: rgba(255, 255, 255, 0.03);
+  --glow-blue: 221 83% 53%;
+  --glow-purple: 262 83% 58%;
+}
+
+* {
+  cursor: none !important;
+  user-select: none;
+}
+
+body {
+  @apply bg-[#050505] text-white antialiased overflow-x-hidden;
+  font-family: 'Inter', sans-serif;
+  scrollbar-width: none;
+}
+
+body::-webkit-scrollbar {
+  display: none;
+}
+
+::selection {
+  background: hsl(var(--primary) / 0.3);
+  color: white;
+}
+
+/* Glassmorphism utility */
+.glass {
+  background: var(--glass);
+  backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Noise Texture */
+.noise {
+  background-image: url('https://grainy-gradients.vercel.app/noise.svg');
+  filter: contrast(150%) brightness(1000%);
+  mix-blend-mode: overlay;
+}
+
+/* Typography Styles */
+h1, h2, h3, h4 {
+  @apply font-bold tracking-tighter;
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.text-reveal {
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0% 100%);
+}
