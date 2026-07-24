@@ -1,74 +1,84 @@
-import React from "react";
 import { motion } from "framer-motion";
+import { Code2, Brain, Smartphone } from "lucide-react";
 
-export const About = () => {
-  const stats = [
-    { label: "Years Coding", value: "4+" },
-    { label: "Projects", value: "15+" },
-    { label: "MSc AI Focus", value: "89%" },
-    { label: "Nodes Managed", value: "500+" }
-  ];
+const STATS = [
+  { label: "Years coding",  value: "4+" },
+  { label: "Projects shipped", value: "15+" },
+  { label: "MSc focus",     value: "AI/ML" },
+  { label: "Stack depth",   value: "End-to-end" },
+];
 
+const FOCUS = [
+  { icon: Brain,       title: "AI & Computer Vision", body: "Deep learning pipelines with YOLO, LSTMs, TensorFlow and OpenCV — turning research into production-grade systems." },
+  { icon: Smartphone,  title: "Mobile & Cross-Platform", body: "Flutter and Dart for high-fidelity iOS/Android experiences with clean architecture and Firebase." },
+  { icon: Code2,       title: "Web & Systems",         body: "Performant, accessible web apps with React/Next.js, Node, and cloud primitives on AWS." },
+];
+
+export function About() {
   return (
-    <section className="relative min-h-screen py-32 px-6 md:px-24 bg-[#050505] overflow-hidden border-t border-white/5">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
-        
-        {/* LEFT: VISUAL PLACEHOLDER */}
-        <motion.div 
-          initial={{ opacity: 0, x: -50 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          className="relative aspect-square md:aspect-auto md:h-[600px] border border-white/10 glass-card overflow-hidden group"
+    <section id="about" className="relative py-28 md:py-40 px-6 sm:px-10">
+      <div className="max-w-6xl mx-auto">
+        {/* Section header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.7, ease: [0.22,1,0.36,1] }}
+          className="mb-16 flex items-end justify-between gap-6 flex-wrap"
         >
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-600/10 mix-blend-overlay" />
-          <div className="absolute inset-0 flex items-center justify-center font-mono text-[8px] tracking-[0.5em] text-white/5 uppercase select-none leading-none break-all p-12">
-            {Array(50).fill("HAMMAD_SAFI_IDENTITY_SYSTEM_").join("")}
+          <div>
+            <p className="eyebrow mb-4">01 — About</p>
+            <h2 className="font-display font-semibold text-4xl md:text-6xl tracking-tight max-w-3xl">
+              I build <span className="text-accent">calm, intelligent software</span> that
+              bridges complex AI and the interfaces people actually use.
+            </h2>
           </div>
-          <div className="absolute bottom-12 left-12 right-12">
-             <div className="h-px w-full bg-white/20 mb-4" />
-             <p className="font-mono text-[10px] tracking-widest text-[#ff7e33]">REF_BIO: PROTOCOL_01</p>
-          </div>
+          <p className="max-w-md text-soft text-base md:text-lg leading-relaxed">
+            MSc Advanced Computer Science candidate at the University of Hertfordshire,
+            specialising in computer vision, deep learning and cross-platform engineering.
+            I care about clarity, performance and craft.
+          </p>
         </motion.div>
 
-        {/* RIGHT: CONTENT */}
-        <div className="flex flex-col">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mb-12"
-          >
-            <span className="font-mono text-[#ff7e33] text-xs tracking-[0.5em] uppercase mb-4 block italic">Section_01 // BIO</span>
-            <h2 className="text-5xl md:text-8xl font-black tracking-tighter text-white mb-8 uppercase leading-none">
-              The Neural<br/>Architect.
-            </h2>
-            <p className="text-zinc-400 text-lg md:text-2xl font-light leading-relaxed mb-8">
-              MSc Advanced Computer Science candidate at the University of Hertfordshire. I bridge the gap between complex <span className="text-white">AI Algorithms</span> and high-performance <span className="text-white">Mobile Ecosystems</span>.
-            </p>
-            <p className="text-zinc-500 text-base md:text-lg leading-relaxed font-light">
-              Specializing in Computer Vision (YOLOv9), Deep Learning (LSTM), and Cross-platform development with Flutter. I build systems that are not just smart, but human-centric and production-ready.
-            </p>
-          </motion.div>
+        {/* Focus grid */}
+        <div className="grid md:grid-cols-3 gap-4 md:gap-6 mb-20">
+          {FOCUS.map((f, i) => (
+            <motion.div
+              key={f.title}
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ duration: 0.6, delay: i * 0.08, ease: [0.22,1,0.36,1] }}
+              className="glass rounded-3xl p-8 hover:shadow-soft dark:hover:shadow-soft-dark transition-shadow"
+            >
+              <div className="w-10 h-10 rounded-xl bg-accent/10 text-accent grid place-items-center mb-6">
+                <f.icon size={20} />
+              </div>
+              <h3 className="text-xl font-semibold mb-2 tracking-tight">{f.title}</h3>
+              <p className="text-soft leading-relaxed">{f.body}</p>
+            </motion.div>
+          ))}
+        </div>
 
-          {/* STATS GRID */}
-          <div className="grid grid-cols-2 gap-6">
-            {stats.map((stat, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                whileHover={{ scale: 1.02, borderColor: "rgba(255,126,51,0.3)" }}
-                className="p-8 border border-white/5 glass-card group transition-colors"
-              >
-                <span className="text-3xl md:text-5xl font-black text-white block mb-2 tracking-tighter group-hover:text-[#ff7e33] transition-colors">{stat.value}</span>
-                <span className="font-mono text-[9px] tracking-widest text-zinc-500 uppercase">{stat.label}</span>
-              </motion.div>
-            ))}
-          </div>
+        {/* Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-black/[0.06] dark:bg-white/[0.08] rounded-3xl overflow-hidden border hairline">
+          {STATS.map((s, i) => (
+            <motion.div
+              key={s.label}
+              initial={{ opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: i * 0.06 }}
+              className="bg-[var(--bg)] p-8"
+            >
+              <p className="font-display text-4xl md:text-5xl font-semibold tracking-tight mb-2">
+                {s.value}
+              </p>
+              <p className="text-soft text-sm">{s.label}</p>
+            </motion.div>
+          ))}
         </div>
       </div>
     </section>
   );
-};
+}
