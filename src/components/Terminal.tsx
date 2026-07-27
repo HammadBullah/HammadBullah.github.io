@@ -1,192 +1,102 @@
-import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 
-interface Line {
-  text: string;
-  kind?: "in" | "out" | "ok" | "err" | "dim" | "mut";
-}
+interface Line { t: string; c?: string; }
 
-interface TerminalProps {
-  open: boolean;
-  onClose: () => void;
-}
+interface Props { open:boolean; onClose:()=>void; }
 
-function help(): Line[] {
-  return [
-    { text: "Available commands:", kind: "dim" },
-    { text: "  help        show this message", kind: "out" },
-    { text: "  about       who is hammad?", kind: "out" },
-    { text: "  projects    list selected work", kind: "out" },
-    { text: "  skills      tech stack", kind: "out" },
-    { text: "  resume      open résumé (PDF)", kind: "out" },
-    { text: "  github      open GitHub profile", kind: "out" },
-    { text: "  contact     contact details", kind: "out" },
-    { text: "  theme       toggle light/dark", kind: "out" },
-    { text: "  clear       clear the screen", kind: "out" },
-    { text: "  exit        close terminal", kind: "out" },
-  ];
-}
-
-const PROJECTS = [
-  "• Drowning Detection     — YOLOv9, TensorFlow, real-time safety",
-  "• PlucknPay               — Flutter, Dart, Firebase marketplace",
-  "• Weather LSTM            — MSc research, time-series models",
-  "• Smart Agriculture       — IoT, Dart, Firebase monitoring",
-];
-const SKILLS = [
-  "Languages  : Python · TypeScript · JavaScript · Dart · Java",
-  "Frontend   : React · Next.js · Tailwind · Framer Motion",
-  "Backend    : Node.js · FastAPI · Express · PostgreSQL · MongoDB",
-  "AI / ML    : TensorFlow · PyTorch · YOLOv9 · LSTM · Hugging Face",
-  "Mobile     : Flutter · Firebase",
-  "Infra      : Docker · AWS · Git · Linux",
-];
-
-export function Terminal({ open, onClose }: TerminalProps) {
-  const [history, setHistory] = useState<Line[]>([
-    { text: "hammad.safi ~ % welcome. type 'help' for commands.", kind: "ok" },
-    { text: "tip: press ⌃` or esc to close.", kind: "dim" },
+export function Terminal({ open, onClose }: Props) {
+  const [lines, setLines] = useState<Line[]>([
+    { t:"NEURAL_TERMINAL v2.0.45 — type 'help' for command list.", c:"" },
+    { t:"session: hammadsafi@core :: ~", c:"neon-c" },
   ]);
-  const [val, setVal] = useState("");
-  const bodyRef = useRef<HTMLDivElement>(null);
+  const [v,setV] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
+  const bodyRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (open) setTimeout(() => inputRef.current?.focus(), 80);
-  }, [open]);
+  useEffect(()=>{ if (open) setTimeout(()=>inputRef.current?.focus(),80); },[open]);
+  useEffect(()=>{ if (bodyRef.current) bodyRef.current.scrollTop = bodyRef.current.scrollHeight; },[lines]);
+  useEffect(()=>{
+    const onKey = (e:KeyboardEvent)=>{ if(open && e.key==="Escape") onClose(); };
+    window.addEventListener("keydown",onKey);
+    return ()=>window.removeEventListener("keydown",onKey);
+  },[open,onClose]);
 
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (!open) return;
-      if (e.key === "Escape") { e.preventDefault(); onClose(); }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [open, onClose]);
+  const out = (l:Line[])=>setLines(prev=>[...prev,...l]);
 
-  useEffect(() => {
-    if (bodyRef.current) bodyRef.current.scrollTop = bodyRef.current.scrollHeight;
-  }, [history]);
-
-  const toggleTheme = () => {
-    const root = document.documentElement;
-    root.classList.toggle("dark");
-    localStorage.setItem("theme", root.classList.contains("dark") ? "dark" : "light");
-  };
-
-  const run = (raw: string) => {
+  const run = (raw:string) => {
     const cmd = raw.trim().toLowerCase();
-    const out: Line[] = [{ text: `hammad.safi ~ % ${raw}`, kind: "in" }];
+    out([{ t:`▸ ${raw}`, c:"neon-c" }]);
     switch (cmd) {
-      case "":
-        break;
-      case "help":
-        out.push(...help());
-        break;
-      case "about":
-        out.push(
-          { text: "Hammad Safi — Software Developer & AI Engineer.", kind: "ok" },
-          { text: "MSc Advanced Computer Science @ University of Hertfordshire.", kind: "out" },
-          { text: "Building AI-powered applications and scalable digital experiences.", kind: "out" },
-        );
-        break;
-      case "projects":
-        out.push({ text: "Selected work:", kind: "dim" });
-        PROJECTS.forEach((p) => out.push({ text: p, kind: "out" }));
-        break;
-      case "skills":
-        out.push(...SKILLS.map<Line>((s) => ({ text: s, kind: "out" })));
-        break;
-      case "resume":
-        out.push({ text: "opening resume…", kind: "mut" });
-        window.open("/resume.pdf", "_blank");
-        break;
-      case "github":
-        out.push({ text: "opening https://github.com/HammadBullah …", kind: "mut" });
-        window.open("https://github.com/HammadBullah", "_blank");
-        break;
-      case "contact":
-        out.push(
-          { text: "email : hammabdullah@gmail.com", kind: "out" },
-          { text: "phone : +44 7352 664787", kind: "out" },
-          { text: "linkedin : linkedin.com/in/hammad-safi", kind: "out" },
-        );
-        break;
-      case "theme":
-        toggleTheme();
-        out.push({ text: `theme → ${document.documentElement.classList.contains("dark") ? "dark" : "light"}`, kind: "ok" });
-        break;
-      case "clear":
-      case "cls":
-        setHistory([]);
-        return;
-      case "exit":
-      case "quit":
-      case "q":
-        onClose();
-        return;
-      default:
-        out.push({ text: `command not found: ${cmd}. try 'help'.`, kind: "err" });
+      case "": break;
+      case "help": out([
+        {t:"AVAILABLE COMMANDS:", c:"neon-m"},
+        {t:"  about     — operator identity"},
+        {t:"  projects  — archive index"},
+        {t:"  skills    — matrix capabilities"},
+        {t:"  contact   — transmission channels"},
+        {t:"  resume    — download dossier"},
+        {t:"  github    — open repository"},
+        {t:"  theme     — (locked) cyber-noir"},
+        {t:"  clear     — purge buffer"},
+        {t:"  exit      — terminate session"},
+      ]); break;
+      case "about": out([
+        {t:"Hammad Safi // Full-Stack / AI Developer",c:"neon-c"},
+        {t:"MSc Advanced Computer Science @ Hertfordshire",c:""},
+        {t:"Building AI-native applications at the intersection of systems and UX.",c:""},
+      ]); break;
+      case "projects": out([
+        {t:"[01] Drowning Detection   — YOLOv9 · TF · Python",c:"neon-g"},
+        {t:"[02] PlucknPay             — Flutter · Firebase",c:"neon-g"},
+        {t:"[03] Weather LSTM         — LSTM · Research",c:"neon-g"},
+        {t:"[04] Smart Agriculture    — IoT · Dart · Firebase",c:"neon-g"},
+      ]); break;
+      case "skills": out([
+        {t:"STACK // Python · TS · JS · Dart · Java",c:""},
+        {t:"WEB // React · Next · Tailwind · Framer Motion",c:""},
+        {t:"AI // TensorFlow · PyTorch · YOLO · LSTM",c:""},
+        {t:"INFRA // Docker · AWS · Firebase · Git · Linux",c:""},
+      ]); break;
+      case "contact": out([
+        {t:"email : hammabdullah@gmail.com",c:"neon-c"},
+        {t:"phone : +44 7352 664787",c:"neon-c"},
+        {t:"in    : linkedin.com/in/hammad-safi",c:"neon-c"},
+      ]); break;
+      case "resume": out([{t:"opening dossier…",c:"neon-m"}]); window.open("/resume.pdf","_blank"); break;
+      case "github": out([{t:"route → github.com/HammadBullah",c:"neon-m"}]); window.open("https://github.com/HammadBullah","_blank"); break;
+      case "theme": out([{t:"theme locked: CYBER_NOIR // SYSTEM_DEFAULT",c:"neon-v"}]); break;
+      case "clear": setLines([]); return;
+      case "exit": case "quit": case "q": onClose(); return;
+      default: out([{t:`UNKNOWN COMMAND: ${cmd} — try 'help'.`, c:"text-[var(--red)]"}]);
     }
-    setHistory((h) => [...h, ...out]);
-  };
-
-  const submit = (e: React.FormEvent) => {
-    e.preventDefault();
-    run(val);
-    setVal("");
   };
 
   return (
     <AnimatePresence>
       {open && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.25 }}
-          className="term"
-          onClick={onClose}
-        >
-          <motion.div
-            initial={{ y: 20, opacity: 0, scale: 0.98 }}
-            animate={{ y: 0, opacity: 1, scale: 1 }}
-            exit={{ y: 10, opacity: 0, scale: 0.98 }}
-            transition={{ type: "spring", stiffness: 240, damping: 26 }}
-            className="term-card"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="term-head">
-              <i className="r" onClick={onClose} role="button" aria-label="close" />
-              <i className="y" />
-              <i className="g" />
-              <span className="ttl">hammad@portfolio — zsh — 120×30</span>
-              <span className="hint">esc to close · ⌃`</span>
+        <motion.div initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} className="fixed inset-0 z-[200] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" onClick={onClose}>
+          <motion.div initial={{y:20,opacity:0,scale:.98}} animate={{y:0,opacity:1,scale:1}} exit={{y:10,opacity:0,scale:.98}}
+            transition={{type:"spring",stiffness:240,damping:24}}
+            className="term-ctx w-full max-w-3xl rounded-lg overflow-hidden" onClick={e=>e.stopPropagation()}
+            style={{boxShadow:"0 0 60px rgba(0,240,255,.25), inset 0 0 40px rgba(0,240,255,.08)"}}>
+            <div className="flex items-center gap-2 px-3 py-2 border-b border-[rgba(0,240,255,.25)]">
+              <span className="w-3 h-3 rounded-full bg-[var(--red)]"/>
+              <span className="w-3 h-3 rounded-full bg-[var(--amber)]"/>
+              <span className="w-3 h-3 rounded-full bg-[var(--green)]"/>
+              <span className="ml-2 tech text-[11px] tracking-[.2em] uppercase neon-c">neural_terminal</span>
+              <span className="ml-auto tech text-[10px] text-[var(--ink-mute)]">ESC to close · ⌃`</span>
             </div>
-            <div className="term-body" ref={bodyRef}>
-              {history.map((l, i) => (
-                <div
-                  key={i}
-                  className={`term-line ${
-                    l.kind === "ok" ? "term-ok" : l.kind === "err" ? "term-err" : l.kind === "mut" ? "term-mut" : l.kind === "dim" ? "term-dim" : ""
-                  }`}
-                >
-                  {l.text}
-                </div>
+            <div ref={bodyRef} className="p-4 mono text-[13px] leading-relaxed h-[60vh] overflow-y-auto">
+              {lines.map((l,i)=>(
+                <div key={i} className={l.c??""} style={{textShadow:"var(--glow-c)"}}>{l.t}</div>
               ))}
+              <form onSubmit={(e)=>{e.preventDefault(); run(v); setV("");}} className="flex items-center gap-2 mt-1">
+                <span className="neon-c" style={{textShadow:"var(--glow-c)"}}>▸</span>
+                <input ref={inputRef} value={v} onChange={e=>setV(e.target.value)} spellCheck={false} autoFocus/>
+                <span className="blink w-2 h-4 bg-[var(--cyan)]" style={{boxShadow:"var(--glow-c)"}}/>
+              </form>
             </div>
-            <form className="term-input" onSubmit={submit}>
-              <span className="term-ok">hammad.safi</span>
-              <span className="term-dim">%</span>
-              <input
-                ref={inputRef}
-                value={val}
-                onChange={(e) => setVal(e.target.value)}
-                spellCheck={false}
-                autoComplete="off"
-                aria-label="terminal input"
-              />
-            </form>
           </motion.div>
         </motion.div>
       )}

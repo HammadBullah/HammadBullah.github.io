@@ -8,51 +8,32 @@ interface SplitTextProps {
   delay?: number;
   stagger?: number;
   duration?: number;
-  startOnView?: boolean;
-  once?: boolean;
 }
 
 export function SplitText({
-  text,
-  className = "",
-  as = "h1",
-  delay = 0,
-  stagger = 0.025,
-  duration = 0.8,
-  startOnView = true,
-  once = true,
+  text, className = "", as = "h2",
+  delay = 0, stagger = 0.015, duration = 0.7,
 }: SplitTextProps) {
   const reduced = useRM();
-  const MotionTag = (motion as any)[as] ?? motion.h1;
+  const Tag: any = motion[as] ?? motion.h2;
   const words = useMemo(() => text.split(" "), [text]);
-
-  if (reduced) return <MotionTag className={className}>{text}</MotionTag>;
-
+  if (reduced) return <Tag className={className}>{text}</Tag>;
   return (
-    <MotionTag
+    <Tag
       className={className}
       initial="hidden"
-      {...(startOnView
-        ? { whileInView: "visible", viewport: { once, margin: "-80px" } }
-        : { animate: "visible" })}
+      whileInView="visible"
+      viewport={{ once: true, margin: "-40px" }}
       transition={{ delayChildren: delay, staggerChildren: stagger }}
     >
-      {words.map((word, i) => (
+      {words.map((w,i)=>(
         <span key={i} className="inline-block mr-[0.25em] align-top overflow-hidden">
-          <motion.span
-            className="inline-block will-change-transform"
-            variants={{
-              hidden: { y: "110%" },
-              visible: {
-                y: "0%",
-                transition: { duration, ease: [0.22, 1, 0.36, 1] as any },
-              },
-            }}
-          >
-            {word}
+          <motion.span className="inline-block will-change-transform"
+            variants={{hidden:{y:"110%"}, visible:{y:"0%", transition:{duration,ease:[0.22,1,0.36,1]}}}}>
+            {w}
           </motion.span>
         </span>
       ))}
-    </MotionTag>
+    </Tag>
   );
 }

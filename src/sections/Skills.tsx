@@ -1,226 +1,150 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { motion, useAnimationFrame } from "framer-motion";
-import {
-  SiPython, SiJavascript, SiTypescript, SiReact, SiNextdotjs, SiFastapi, SiNodedotjs,
-  SiFlutter, SiTensorflow, SiPytorch, SiDocker, SiGit, SiGithub, SiMongodb, SiPostgresql,
-  SiFirebase, SiOpenjdk,
-} from "react-icons/si";
-import type { IconType as _IconType } from "react-icons";
-import { Cloud } from "lucide-react";
+import { useRef, useState, useMemo } from "react";
+import { motion, useMotionValue, useSpring, AnimatePresence } from "framer-motion";
 import { SplitText } from "../components/SplitText";
 import { useReducedMotion } from "../hooks/useHooks";
 
-const AWSIcon = ({ size = 16, c }:{size?:number; c?:string}) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill={c ?? "#FF9900"} aria-hidden>
-    <path d="M6.8 11.4c0 .3 0 .6.1.8l.3.8c0 .1 0 .2-.1.2l-.3.2h-.2l-.2-.1c-.1-.1-.2-.2-.2-.3l-.2-.4c-.4.5-1 .9-1.8.9-1.3 0-2.3-1.2-2.3-2.9 0-1.7 1-2.9 2.3-2.9.9 0 1.7.4 2.2 1.1l-.2.4c-.2.3-.2.6-.2 1v.3Zm-1-1.1c-.2-.4-.5-.6-.9-.6-.6 0-1 .5-1 1.2 0 .8.4 1.2 1 1.2.4 0 .7-.2.9-.6.1-.2.1-.5.1-.8v-.4Zm4.4 3c-.2 0-.3 0-.3-.2v-.3c-.1.1-.3.2-.5.2-1 0-1.6-.6-1.6-1.8V7.9c0-.1 0-.2.2-.2h.4c.1 0 .2.1.2.2v4.1c0 .6.3.9.8.9.2 0 .4-.1.5-.2 0 0 .1 0 .1.1l.2.3c0 .1 0 .2-.1.2h.1Zm2.9.1c-.6 0-1-.2-1.2-.5-.1-.1-.1-.3.1-.4l.2-.2c.1 0 .2 0 .2.1.2.2.4.3.8.3.4 0 .7-.2.7-.5 0-.2-.1-.4-.9-.6-.9-.2-1.4-.7-1.4-1.4 0-.7.6-1.2 1.4-1.2.6 0 1 .2 1.1.5.1.1.1.2-.1.3l-.2.2c-.1.1-.2 0-.2-.1-.2-.2-.4-.3-.7-.3-.4 0-.6.2-.6.4 0 .2.1.4.9.6.9.2 1.4.6 1.4 1.4-.1.9-.7 1.4-1.6 1.4Zm4.6-.1c-.1 0-.2 0-.2-.1-.2-.3-.3-.4-.4-.7-1-.1-1.6-.8-1.6-1.7 0-.5.2-.9.5-1.2.3-.3.8-.5 1.3-.5.2 0 .5 0 .7.1V7.9c0-.1.1-.2.2-.2h.4c.1 0 .2.1.2.2v4.9c0 .1-.1.2-.2.2h-.4l-.2.1Zm-.4-2.7c-.5 0-.8.3-.8.8 0 .5.3.8.8.8.2 0 .4 0 .5-.1v-1.4c-.2-.1-.3-.1-.5-.1Zm4-5.4c3.2 3 5.2 7.8 5.2 13 0 .5 0 1-.1 1.5-.2.1-.3 0-.4-.2-.3-.9-.5-1.8-.8-2.7-.1-.3.1-.4.3-.2 1.3 1 1.9 2 1.9 2 .1.1 0 .2-.1.3l-.1.1c-.3.2-.7 0-1.3-.4C22 19.1 17 21 12.8 21c-3.3 0-6.2-1.1-8.4-2.8-.2-.1-.2-.3 0-.4.2-.1.3 0 .5.1 2.1 1.5 4.8 2.4 7.9 2.4 3.5 0 7-1.2 8.7-3.5-2.3-.1-4.6-.9-6.4-2.3-.3-.2-.2-.5.2-.5 2.3.1 4.6-.2 6.9-1.3.1-.1.2 0 .2.1.2.4.3.8.4 1.1v-.2c0-4.3-2.3-8.2-5.8-10.5-.2-.1-.1-.3.2-.3Z"/>
-  </svg>
-);
-
-interface SkillInfo {
-  name: string;
-  icon: any;
-  color?: string;
-  years: string;
-  projects: string;
+interface Skill {
+  label: string;
+  color: string;
+  mag?: boolean;
+  desc: string;
 }
-
-const SKILLS: SkillInfo[] = [
-  { name: "Python",       icon: SiPython,     color: "#3776AB", years: "3+ yrs",  projects: "Drowning Detection · Weather LSTM" },
-  { name: "Java",         icon: SiOpenjdk,    color: "#E76F00", years: "2+ yrs",  projects: "University systems" },
-  { name: "JavaScript",   icon: SiJavascript, color: "#F7DF1E", years: "4+ yrs",  projects: "Web apps · Tooling" },
-  { name: "TypeScript",   icon: SiTypescript, color: "#3178C6", years: "3+ yrs",  projects: "This portfolio · SaaS" },
-  { name: "React",        icon: SiReact,      color: "#61DAFB", years: "3+ yrs",  projects: "This portfolio · Dashboards" },
-  { name: "Next.js",      icon: SiNextdotjs,  color: undefined, years: "2+ yrs",  projects: "Marketing sites · APIs" },
-  { name: "FastAPI",      icon: SiFastapi,    color: "#009688", years: "2+ yrs",  projects: "AI backends" },
-  { name: "Node.js",      icon: SiNodedotjs,  color: "#339933", years: "3+ yrs",  projects: "APIs · Real-time" },
-  { name: "Flutter",      icon: SiFlutter,    color: "#02569B", years: "2+ yrs",  projects: "PlucknPay · Smart Ag" },
-  { name: "TensorFlow",   icon: SiTensorflow, color: "#FF6F00", years: "2+ yrs",  projects: "Drowning Detection" },
-  { name: "PyTorch",      icon: SiPytorch,    color: "#EE4C2C", years: "2+ yrs",  projects: "Weather LSTM" },
-  { name: "Docker",       icon: SiDocker,     color: "#2496ED", years: "2+ yrs",  projects: "Self-hosted" },
-  { name: "Git",          icon: SiGit,        color: "#F05032", years: "4+ yrs",  projects: "All projects" },
-  { name: "GitHub",       icon: SiGithub,     color: undefined, years: "4+ yrs",  projects: "Open source" },
-  { name: "MongoDB",      icon: SiMongodb,    color: "#47A248", years: "2+ yrs",  projects: "APIs · Real-time" },
-  { name: "PostgreSQL",   icon: SiPostgresql, color: "#4169E1", years: "2+ yrs",  projects: "Data apps" },
-  { name: "Firebase",     icon: SiFirebase,   color: "#FFCA28", years: "2+ yrs",  projects: "PlucknPay · Smart Ag" },
-  { name: "AWS",          icon: AWSIcon,      color: "#FF9900", years: "1+ yr",   projects: "Cloud deployments" },
+const SKILLS: Skill[] = [
+  { label:"Python",    color:"#30ffb4", desc:"Vision, LSTMs, prompt pipelines."},
+  { label:"TypeScript",color:"#00f0ff", desc:"React, Node, full-stack systems."},
+  { label:"React",     color:"#00f0ff", desc:"Fiber, R3F, Framer Motion."},
+  { label:"Flutter",   color:"#7b5bff", desc:"Cross-platform mobile at 60fps."},
+  { label:"TensorFlow",color:"#ff2bd6", desc:"Detection & time-series models."},
+  { label:"PyTorch",   color:"#ff2bd6", desc:"Research experiments & training."},
+  { label:"Node.js",   color:"#30ffb4", desc:"APIs, realtime, workers."},
+  { label:"FastAPI",   color:"#30ffb4", desc:"AI service backends."},
+  { label:"Docker",    color:"#00f0ff", desc:"Containers & reproducibility."},
+  { label:"AWS",       color:"#ffb020", desc:"Lambdas, S3, deploy pipelines."},
+  { label:"Firebase",  color:"#ffb020", desc:"Auth, Firestore, FCM."},
+  { label:"PostgreSQL",color:"#7b5bff", desc:"Relational modeling, SQL."},
+  { label:"MongoDB",   color:"#30ffb4", desc:"Document stores for apps."},
+  { label:"Git",       color:"#ff2bd6", desc:"Branching, hooks, CI."},
 ];
 
-interface Particle {
-  i: number; x: number; y: number;
-  vx: number; vy: number;
-  r: number; // scale
-  rot: number; rotV: number;
-}
-
 export function Skills() {
+  const ref = useRef<HTMLDivElement>(null);
+  const [active, setActive] = useState<number|null>(null);
   const reduced = useReducedMotion();
-  const fieldRef = useRef<HTMLDivElement>(null);
-  const mouse = useRef({x:-9999,y:-9999});
-  const parts = useRef<Particle[]>([]);
-  const refs = useRef<(HTMLDivElement|null)[]>([]);
-  const [size, setSize] = useState({w:0,h:0});
-  const [open, setOpen] = useState<number|null>(null);
 
-  useMemo(() => {
-    parts.current = SKILLS.map((_, i) => ({
-      i,
-      x: 0, y: 0,
-      vx: (Math.random()-0.5)*0.12,
-      vy: (Math.random()-0.5)*0.12,
-      r: 0.85 + Math.random()*0.3,
-      rot: (Math.random()-0.5)*6,
-      rotV: (Math.random()-0.5)*0.15,
-    }));
-  }, []);
+  // layout positions around a central core (percent-based so it scales)
+  const positions = useMemo(()=>{
+    const n = SKILLS.length;
+    return SKILLS.map((_,i)=>{
+      // two orbits
+      const ring = i%2===0 ? 34 : 22; // radius in %
+      const angle = (i/n)*Math.PI*2 - Math.PI/2;
+      return {
+        x: 50 + Math.cos(angle)*ring,
+        y: 50 + Math.sin(angle)*ring*0.8,
+      };
+    });
+  },[]);
 
-  useEffect(() => {
-    const el = fieldRef.current; if (!el) return;
-    const resize = () => {
-      const rect = el.getBoundingClientRect();
-      setSize({w: rect.width, h: rect.height});
-      parts.current.forEach(p => {
-        if (p.x===0 && p.y===0) {
-          p.x = 60 + Math.random()*(rect.width-120);
-          p.y = 60 + Math.random()*(rect.height-120);
-        }
-      });
-    };
-    resize();
-    window.addEventListener("resize", resize);
-    return () => window.removeEventListener("resize", resize);
-  }, []);
+  // magnetic offsets per orb
+  const mxs = useRef(SKILLS.map(()=>useMotionValue(0))).current;
+  const mys = useRef(SKILLS.map(()=>useMotionValue(0))).current;
+  const spxs = useRef(mxs.map(m=>useSpring(m,{stiffness:160,damping:12,mass:.4}))).current;
+  const spys = useRef(mys.map(m=>useSpring(m,{stiffness:160,damping:12,mass:.4}))).current;
 
-  useEffect(() => {
-    const el = fieldRef.current; if (!el) return;
-    const move = (e: MouseEvent) => {
-      const r = el.getBoundingClientRect();
-      mouse.current.x = e.clientX - r.left; mouse.current.y = e.clientY - r.top;
-    };
-    const leave = () => { mouse.current.x = -9999; mouse.current.y = -9999; };
-    el.addEventListener("mousemove", move);
-    el.addEventListener("mouseleave", leave);
-    return () => { el.removeEventListener("mousemove", move); el.removeEventListener("mouseleave", leave); };
-  }, []);
-
-  useAnimationFrame((_,dt) => {
-    if (reduced || !size.w || !size.h) return;
-    const t = Math.min(32, dt)/16;
-    const REP = 110;
-    parts.current.forEach((p, idx) => {
-      p.vx += (Math.random()-0.5)*0.004*t;
-      p.vy += (Math.random()-0.5)*0.004*t;
-      p.vx *= 0.985; p.vy *= 0.985;
-      const mx = mouse.current.x, my = mouse.current.y;
-      const dx = p.x - mx, dy = p.y - my;
-      const d2 = dx*dx + dy*dy;
-      if (d2 < REP*REP && d2 > 0.1) {
-        const d = Math.sqrt(d2);
-        const f = (REP-d)/REP * 0.5;
-        p.vx += (dx/d)*f*t; p.vy += (dy/d)*f*t;
-      }
-      // soft separation from other skills
-      for (let j=0; j<parts.current.length; j++) {
-        if (j===idx) continue;
-        const o = parts.current[j];
-        const ddx = p.x-o.x, ddy = p.y-o.y;
-        const dd2 = ddx*ddx + ddy*ddy;
-        const R = 80;
-        if (dd2 < R*R && dd2>0.1) {
-          const d = Math.sqrt(dd2);
-          const f = (R-d)/R * 0.08;
-          p.vx += (ddx/d)*f; p.vy += (ddy/d)*f;
-        }
-      }
-      p.x += p.vx*t; p.y += p.vy*t; p.rot += p.rotV*t;
-      const PAD = 60;
-      if (p.x < PAD) { p.x = PAD; p.vx *= -0.7; }
-      if (p.x > size.w-PAD) { p.x = size.w-PAD; p.vx *= -0.7; }
-      if (p.y < PAD) { p.y = PAD; p.vy *= -0.7; }
-      if (p.y > size.h-PAD) { p.y = size.h-PAD; p.vy *= -0.7; }
-      const el = refs.current[idx];
-      if (el) {
-        const isOpen = open === idx;
-        const scale = isOpen ? p.r*1.15 : p.r;
-        el.style.transform = `translate3d(${p.x}px, ${p.y}px,0) translate(-50%,-50%) rotate(${p.rot}deg) scale(${scale})`;
-        el.style.zIndex = isOpen ? "20" : "1";
+  const onMove = (e: React.MouseEvent) => {
+    const rect = ref.current!.getBoundingClientRect();
+    const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+    positions.forEach((p,i)=>{
+      const cx = (p.x/100)*rect.width, cy = (p.y/100)*rect.height;
+      const dx = mx-cx, dy = my-cy, d = Math.hypot(dx,dy);
+      const R = 110;
+      if (d < R) {
+        const f = (R-d)/R;
+        mxs[i].set(-(dx/d)*f*18);
+        mys[i].set(-(dy/d)*f*18);
+      } else {
+        mxs[i].set(0); mys[i].set(0);
       }
     });
-  });
+  };
+  const onLeave = () => { mxs.forEach(m=>m.set(0)); mys.forEach(m=>m.set(0)); };
 
   return (
     <section id="skills" className="relative py-28 md:py-40 section overflow-hidden">
-      <div className="absolute inset-0 -z-10 pointer-events-none">
-        <div className="aurora" style={{width:520,height:520,left:"-8%",top:"0%",background:"var(--blob-2)"}}/>
-        <div className="aurora" style={{width:520,height:520,right:"-8%",bottom:"0%",background:"var(--blob-1)"}}/>
-        <div className="noise"/>
-      </div>
-      <div className="container-x relative z-10">
-        <div className="max-w-3xl mb-8 md:mb-10">
-          <motion.p initial={{opacity:0,y:10}} whileInView={{opacity:1,y:0}} viewport={{once:true}} transition={{duration:.6}} className="eyebrow mb-4">04 — Toolkit</motion.p>
-          <SplitText as="h2" className="font-display text-4xl md:text-6xl tracking-tight" text="Tools I reach for. Hover to learn more." />
-        </div>
+      <div className="noise"/>
+      <div className="container-x">
+        <div className="flex items-center gap-3 mb-8"><span className="section-tag">02 // SKILL MATRIX</span></div>
+        <SplitText as="h2" className="headline text-3xl md:text-5xl max-w-3xl mb-4 neon-m" text="Capability constellation online."/>
+        <p className="tech text-[var(--ink-dim)] text-[12px] tracking-[.2em] uppercase mb-8">Hover to perturb the matrix · click to inspect</p>
 
-        <div ref={fieldRef} className="relative w-full h-[560px] md:h-[640px] rounded-3xl border hairline bg-soft/40 overflow-hidden" style={{
-          backgroundImage: "radial-gradient(1000px 500px at 50% 0%, color-mix(in srgb,var(--accent) 10%, transparent), transparent 60%)",
-        }}>
-          <div className="absolute inset-0 grid-fade opacity-50 pointer-events-none" />
-          {SKILLS.map((s, i) => {
-            const Icon = s.icon;
-            const isOpen = open === i;
+        <div ref={ref} onMouseMove={onMove} onMouseLeave={onLeave} className="relative mx-auto w-full max-w-4xl aspect-[16/11] md:aspect-[16/9]">
+          {/* grid + scan */}
+          <div className="absolute inset-0 border border-[rgba(0,240,255,.2)]" style={{boxShadow:"inset 0 0 60px rgba(0,240,255,.08)"}}/>
+          <div className="absolute inset-0 pointer-events-none" style={{
+            background:"radial-gradient(ellipse at center, rgba(0,240,255,.1), transparent 60%)",
+          }}/>
+          {/* rings */}
+          {[34,22].map((r,i)=>(
+            <div key={i} className="absolute rounded-full border border-[rgba(0,240,255,.15)]"
+              style={{
+                left:`${50-r}%`, top:`${50-r*0.8}%`,
+                width:`${r*2}%`, paddingBottom:`${r*2*0.8}%`, height:0,
+                boxShadow:i===0?"inset 0 0 40px rgba(255,43,214,.08)":"inset 0 0 40px rgba(0,240,255,.1)",
+              }}/>
+          ))}
+          {/* core */}
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 md:w-28 md:h-28 grid place-items-center">
+            <motion.div animate={{rotate:360}} transition={{duration:24,repeat:Infinity,ease:"linear"}} className="absolute inset-0 rounded-full border border-[var(--cyan)]" style={{boxShadow:"var(--glow-c)"}}/>
+            <motion.div animate={{rotate:-360}} transition={{duration:30,repeat:Infinity,ease:"linear"}} className="absolute inset-3 rounded-full border border-[var(--magenta)]" style={{boxShadow:"var(--glow-m)"}}/>
+            <div className="relative w-10 h-10 md:w-14 md:h-14 rounded-full bg-[var(--bg)] border border-[var(--cyan)] grid place-items-center mono text-[10px] tracking-[.25em] neon-c" style={{boxShadow:"var(--glow-c)"}}>
+              MATRIX
+            </div>
+          </div>
+
+          {/* orbs */}
+          {SKILLS.map((s,i)=>{
+            const p = positions[i];
+            const isActive = active===i;
+            const size = 44 + (s.mag?8:0);
             return (
-              <div
-                key={s.name}
-                ref={el => { refs.current[i] = el; }}
-                className="skill-chip"
-                onMouseEnter={()=>setOpen(i)}
-                onMouseLeave={()=>setOpen(o=>o===i?null:o)}
-                onClick={()=>setOpen(i===open?null:i)}
-                style={{ left:0, top:0, transform:"translate(-200px,-200px)" }}
+              <motion.button
+                key={s.label}
+                onMouseEnter={()=>!reduced && setActive(i)}
+                onMouseLeave={()=>setActive(a=>a===i?null:a)}
+                onClick={()=>setActive(isActive?null:i)}
+                style={{
+                  left:`${p.x}%`, top:`${p.y}%`,
+                  x: spxs[i], y: spys[i],
+                  width:size, height:size,
+                  borderColor: s.color,
+                  boxShadow: `0 0 16px ${s.color}60, inset 0 0 12px ${s.color}40`,
+                  background:`radial-gradient(circle at 30% 30%, ${s.color}55, transparent 70%)`,
+                  zIndex: isActive?10:1,
+                }}
+                className="orb absolute -translate-x-1/2 -translate-y-1/2 rounded-full grid place-items-center tech text-[10px] uppercase tracking-[.2em] text-white"
+                whileTap={{scale:.9}}
               >
-                <span className="ic"><Icon size={15} color={s.color} /></span>
-                <span className="nm">{s.name}</span>
-              </div>
+                <span style={{textShadow:`0 0 10px ${s.color}`}}>{s.label}</span>
+              </motion.button>
             );
           })}
 
-          {/* Floating detail card */}
-          <AnchoredCard open={open} skill={open!==null?SKILLS[open]:null} />
-
-          <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-[11px] mono text-mute">
-            <span>{SKILLS.length} technologies · interactive field</span>
-            <span>hover · click to pin</span>
-          </div>
+          {/* detail */}
+          <AnimatePresence>
+            {active!==null && (
+              <motion.div initial={{opacity:0,y:10,scale:.95}} animate={{opacity:1,y:0,scale:1}} exit={{opacity:0,y:10,scale:.95}}
+                className={`hud absolute left-1/2 -translate-x-1/2 bottom-4 w-[min(400px,calc(100% - 2rem))] p-4 mono text-[12px] ${SKILLS[active].mag?"magenta":""}`}>
+                <span className="corner-tr"/><span className="corner-bl"/>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="tech text-[10px] tracking-[.3em] uppercase neon-c">NODE // {SKILLS[active].label}</span>
+                  <span className="w-2 h-2 rounded-full blink" style={{background:SKILLS[active].color,boxShadow:`0 0 10px ${SKILLS[active].color}`}}/>
+                </div>
+                <p className="text-[var(--ink-dim)] leading-relaxed">{SKILLS[active].desc}</p>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
     </section>
-  );
-}
-
-function AnchoredCard({ open, skill }: { open:number|null; skill:SkillInfo|null }) {
-  return (
-    <motion.div
-      initial={false}
-      animate={{ opacity: skill ? 1 : 0, y: skill ? 0 : 10, scale: skill ? 1 : 0.96 }}
-      transition={{ duration: .25 }}
-      className="absolute left-1/2 -translate-x-1/2 bottom-6 w-[min(420px,calc(100%-2rem))] rounded-2xl border hairline glass p-4"
-      style={{boxShadow:"var(--shadow-md)", pointerEvents: skill ? "auto":"none"}}
-    >
-      {skill ? (
-        <div className="flex items-start gap-3">
-          <div className="w-10 h-10 rounded-lg border hairline bg-elev grid place-items-center shrink-0">
-            <skill.icon size={18} color={skill.color} />
-          </div>
-          <div className="min-w-0">
-            <div className="flex items-center justify-between gap-2">
-              <p className="font-semibold tracking-tight">{skill.name}</p>
-              <span className="chip !py-0 !px-2 !text-[10px]">{skill.years}</span>
-            </div>
-            <p className="text-[12px] text-soft mt-1">{skill.projects}</p>
-          </div>
-        </div>
-      ) : (
-        <p className="text-[12px] text-soft">Hover a chip to see details.</p>
-      )}
-    </motion.div>
   );
 }
