@@ -23,8 +23,8 @@ const projects: Project[] = [
       'A real-time computer-vision pipeline built on YOLOv9 and TensorFlow that detects drowning events from overhead pool cameras at 32fps with 89% mAP@0.5 — designed to alert lifeguards within sub-second latency windows.',
     tags: ['Python', 'YOLOv9', 'TensorFlow', 'OpenCV', 'CUDA'],
     metric: { label: 'mAP@0.5 / FPS', value: '89% · 32fps' },
-    color: '#1e3a8a',
-    bg: 'from-blue-50 to-indigo-100 dark:from-blue-950/40 dark:to-indigo-950/40',
+    color: '#3f3628',
+    bg: 'from-paper-100 to-paper-200/80 dark:from-paper-800/60 dark:to-paper-900/70',
   },
   {
     id: 'plucknpay',
@@ -35,8 +35,8 @@ const projects: Project[] = [
       'A Flutter marketplace connecting local farmers directly with consumers. Real-time inventory via Firebase, secure payments, and a clean transactional UI — shipped end-to-end from concept to store.',
     tags: ['Flutter', 'Dart', 'Firebase', 'Stripe', 'Cloud Functions'],
     metric: { label: 'Scope', value: 'Full product' },
-    color: '#14532d',
-    bg: 'from-emerald-50 to-green-100 dark:from-emerald-950/40 dark:to-green-950/40',
+    color: '#5a4e3a',
+    bg: 'from-paper-100 to-paper-200/80 dark:from-paper-800/60 dark:to-paper-900/70',
   },
   {
     id: 'weather-lstm',
@@ -47,8 +47,8 @@ const projects: Project[] = [
       'MSc dissertation work exploring stacked LSTM architectures for multivariate meteorological forecasting, benchmarked against classical ARIMA and Prophet baselines across European weather stations.',
     tags: ['PyTorch', 'LSTM', 'Time Series', 'Pandas', 'Research'],
     metric: { label: 'Type', value: 'MSc Thesis' },
-    color: '#7c2d12',
-    bg: 'from-orange-50 to-amber-100 dark:from-orange-950/40 dark:to-amber-950/40',
+    color: '#2a2318',
+    bg: 'from-paper-100 to-paper-200/80 dark:from-paper-800/60 dark:to-paper-900/70',
   },
   {
     id: 'smart-agri',
@@ -59,8 +59,8 @@ const projects: Project[] = [
       'A sensor-to-app agriculture platform: soil-moisture and climate data from ESP-based nodes, streamed to Firebase, and surfaced in a Flutter dashboard for remote farm monitoring and irrigation scheduling.',
     tags: ['IoT', 'ESP32', 'Flutter', 'Firebase', 'Dart'],
     metric: { label: 'Domain', value: 'AgriTech' },
-    color: '#365314',
-    bg: 'from-lime-50 to-green-100 dark:from-lime-950/40 dark:to-green-950/40',
+    color: '#5a4e3a',
+    bg: 'from-paper-100 to-paper-200/80 dark:from-paper-800/60 dark:to-paper-900/70',
   },
 ]
 
@@ -109,14 +109,14 @@ function ProjectCard({ p, index }: { p: Project; index: number }) {
       {/* Visual */}
       <div className="md:col-span-7">
         <div
-          className={`group relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-paper-200 bg-gradient-to-br ${p.bg} dark:border-paper-800`}
+          className={`group relative aspect-[4/3] w-full overflow-hidden rounded-sm border border-paper-300/60 bg-gradient-to-br ${p.bg} shadow-[0_1px_0_rgba(255,255,255,0.5)_inset,0_1px_2px_rgba(60,40,15,0.08),0_14px_32px_-16px_rgba(60,40,15,0.25)] dark:border-paper-800/70 dark:shadow-[0_1px_0_rgba(255,220,170,0.04)_inset,0_1px_2px_rgba(0,0,0,0.5),0_14px_32px_-16px_rgba(0,0,0,0.7)]`}
         >
           <ProjectArtwork color={p.color} />
           <div className="absolute left-5 top-5 font-mono text-[11px] uppercase tracking-[0.2em] text-paper-600/70 dark:text-paper-300/70">
             {p.id} · {p.year}
           </div>
           {p.metric && (
-            <div className="absolute bottom-5 right-5 rounded-full bg-white/70 px-3 py-1.5 font-mono text-xs text-paper-800 backdrop-blur dark:bg-paper-900/70 dark:text-paper-100">
+            <div className="absolute bottom-5 right-5 rounded-full border border-paper-300/60 bg-paper-50/80 px-3 py-1.5 font-mono text-xs text-paper-800 backdrop-blur dark:border-paper-700/60 dark:bg-paper-900/70 dark:text-paper-100">
               {p.metric.label} — {p.metric.value}
             </div>
           )}

@@ -15,33 +15,119 @@
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
   }
+
+  /* ---- Paper background stack ---- */
   body {
-    @apply bg-paper-50 text-paper-900 font-sans;
+    @apply font-sans text-paper-900;
+    background-color: #efe8d6;
     font-feature-settings: "ss01", "cv11";
+    position: relative;
+    min-height: 100vh;
   }
   .dark body {
-    @apply bg-paper-950 text-paper-100;
+    @apply text-paper-100;
+    background-color: #120e08;
   }
-  ::selection {
-    @apply bg-paper-900 text-paper-50;
+
+  /* Soft cream base wash */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    pointer-events: none;
+    background:
+      radial-gradient(1200px 800px at 15% -10%, rgba(255, 250, 235, 0.9), transparent 60%),
+      radial-gradient(900px 700px at 110% 20%, rgba(235, 220, 185, 0.55), transparent 60%),
+      radial-gradient(1000px 900px at 50% 120%, rgba(225, 205, 170, 0.45), transparent 60%),
+      linear-gradient(180deg, #f3ecdb 0%, #ebe2cb 50%, #e5dac0 100%);
   }
-  .dark ::selection {
-    @apply bg-paper-100 text-paper-950;
+  .dark body::after {
+    background:
+      radial-gradient(1200px 800px at 15% -10%, rgba(60, 45, 25, 0.5), transparent 60%),
+      radial-gradient(900px 700px at 110% 20%, rgba(40, 30, 15, 0.6), transparent 60%),
+      radial-gradient(1000px 900px at 50% 120%, rgba(30, 22, 12, 0.7), transparent 60%),
+      linear-gradient(180deg, #1a140c 0%, #141009 50%, #0f0b06 100%);
   }
-  /* Subtle grain texture */
+
+  /* Edges — subtle vignette like the paper falls off toward the desk */
   body::before {
     content: '';
     position: fixed;
     inset: 0;
+    z-index: -1;
     pointer-events: none;
-    z-index: 100;
-    opacity: 0.035;
-    mix-blend-mode: multiply;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background:
+      radial-gradient(ellipse at center, transparent 55%, rgba(120, 90, 50, 0.18) 100%),
+      radial-gradient(ellipse at center, transparent 70%, rgba(80, 55, 25, 0.08) 100%);
   }
   .dark body::before {
+    background:
+      radial-gradient(ellipse at center, transparent 50%, rgba(0, 0, 0, 0.55) 100%),
+      radial-gradient(ellipse at center, transparent 75%, rgba(0, 0, 0, 0.35) 100%);
+  }
+
+  /* Fiber + grain overlay (multi-layer noise for paper-fiber feel) */
+  .paper-grain {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    pointer-events: none;
+    mix-blend-mode: multiply;
+    opacity: 0.5;
+  }
+  .dark .paper-grain {
     mix-blend-mode: overlay;
-    opacity: 0.05;
+    opacity: 0.35;
+  }
+  .paper-fibers {
+    position: fixed;
+    inset: 0;
+    z-index: 51;
+    pointer-events: none;
+    opacity: 0.12;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='600'><filter id='f'><feTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.35  0 0 0 0 0.25  0 0 0 0 0.12  0 0 0 0.9 0'/></filter><rect width='100%25' height='100%25' filter='url(%23f)'/></svg>");
+    background-size: 600px 600px;
+  }
+  .dark .paper-fibers {
+    mix-blend-mode: overlay;
+    opacity: 0.08;
+  }
+  .paper-dust {
+    position: fixed;
+    inset: 0;
+    z-index: 52;
+    pointer-events: none;
+    opacity: 0.35;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='1.8' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.2  0 0 0 0 0.13  0 0 0 0 0.05  0 0 0 0.35 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    background-size: 300px 300px;
+  }
+  .dark .paper-dust {
+    mix-blend-mode: overlay;
+    opacity: 0.2;
+  }
+
+  /* Subtle warm hue shift — like paper color temperature */
+  .paper-tint {
+    position: fixed;
+    inset: 0;
+    z-index: 49;
+    pointer-events: none;
+    background: linear-gradient(180deg, rgba(255, 240, 200, 0.02), rgba(180, 130, 60, 0.03));
+  }
+  .dark .paper-tint {
+    background: linear-gradient(180deg, rgba(255, 200, 120, 0.015), rgba(0, 0, 0, 0));
+  }
+
+  ::selection {
+    background: #3f3628;
+    color: #f7f3ea;
+  }
+  .dark ::selection {
+    background: #e6dcc7;
+    color: #120e08;
   }
 }
 
@@ -64,10 +150,17 @@
     @apply font-mono text-xs uppercase tracking-[0.2em] text-paper-500;
   }
   .hairline {
-    @apply border-t border-paper-200 dark:border-paper-800;
+    @apply border-t border-paper-300/60 dark:border-paper-800/70;
   }
   .dot {
     @apply inline-block h-1.5 w-1.5 rounded-full bg-current align-middle;
+  }
+  /* A paper card with subtle shadow like a sheet resting on the surface */
+  .paper-card {
+    @apply rounded-md border border-paper-300/60 bg-paper-50/80 shadow-[0_1px_0_rgba(255,255,255,0.6)_inset,0_1px_2px_rgba(60,40,15,0.08),0_8px_24px_-8px_rgba(60,40,15,0.15)] backdrop-blur-[1px];
+  }
+  .dark .paper-card {
+    @apply border-paper-800/70 bg-paper-900/60 shadow-[0_1px_0_rgba(255,220,170,0.04)_inset,0_1px_2px_rgba(0,0,0,0.5),0_8px_24px_-8px_rgba(0,0,0,0.6)];
   }
 }
 

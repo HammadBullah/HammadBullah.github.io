@@ -13,7 +13,6 @@ export default function App() {
   useSmoothScroll()
 
   useEffect(() => {
-    // Fade in body on mount
     document.body.style.opacity = '0'
     requestAnimationFrame(() => {
       document.body.style.transition = 'opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1)'
@@ -23,6 +22,12 @@ export default function App() {
 
   return (
     <div className="relative min-h-screen">
+      {/* Paper texture stack — fixed, non-interactive */}
+      <span className="paper-tint" aria-hidden />
+      <span className="paper-grain" aria-hidden />
+      <span className="paper-fibers" aria-hidden />
+      <span className="paper-dust" aria-hidden />
+
       <Navbar />
       <main>
         <Hero />

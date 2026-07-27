@@ -50,7 +50,7 @@ export default function Navbar() {
           className={cn(
             'flex items-center justify-between rounded-full border px-5 py-2.5 transition-all duration-500 ease-out-expo',
             scrolled
-              ? 'border-paper-200/70 bg-paper-50/70 backdrop-blur-xl dark:border-paper-800/70 dark:bg-paper-950/60'
+              ? 'border-paper-300/60 bg-paper-50/70 backdrop-blur-xl shadow-[0_1px_0_rgba(255,255,255,0.5)_inset,0_8px_24px_-12px_rgba(60,40,15,0.18)] dark:border-paper-800/70 dark:bg-paper-900/60 dark:shadow-[0_1px_0_rgba(255,220,170,0.04)_inset,0_8px_24px_-12px_rgba(0,0,0,0.7)]'
               : 'border-transparent bg-transparent'
           )}
         >
