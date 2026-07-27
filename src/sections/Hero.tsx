@@ -8,7 +8,7 @@ const item = {
 
 export default function Hero() {
   return (
-    <section id="top" className="relative pt-40 pb-24 md:pt-52 md:pb-32">
+    <section className="relative pt-40 pb-24 md:pt-52 md:pb-32">
       <div className="container-x">
         <motion.div
           initial="hidden"

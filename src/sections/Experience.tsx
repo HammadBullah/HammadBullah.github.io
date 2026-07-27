@@ -45,7 +45,7 @@ const entries: Entry[] = [
 
 export default function Experience() {
   return (
-    <section id="experience" className="py-24 md:py-32">
+    <section className="py-24 md:py-32">
       <div className="container-x">
         <div className="mb-16 grid gap-10 md:grid-cols-12">
           <div className="md:col-span-3">

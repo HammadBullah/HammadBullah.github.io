@@ -11,7 +11,7 @@ const channels = [
 
 export default function Contact() {
   return (
-    <section id="contact" className="py-24 md:py-40">
+    <section className="py-24 md:py-40">
       <div className="container-x">
         <div className="mb-16 grid gap-10 md:grid-cols-12">
           <div className="md:col-span-3">

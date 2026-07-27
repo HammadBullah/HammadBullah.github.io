@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import Navbar from './components/Navbar'
+import StackedSection from './components/StackedSection'
 import Hero from './sections/Hero'
 import About from './sections/About'
 import Skills from './sections/Skills'
@@ -29,15 +30,33 @@ export default function App() {
       <span className="paper-dust" aria-hidden />
 
       <Navbar />
+
       <main>
-        <Hero />
-        <About />
-        <Skills />
-        <Projects />
-        <Experience />
-        <Contact />
+        <StackedSection id="top" tone="hero">
+          <Hero />
+        </StackedSection>
+
+        <StackedSection id="about" index={1}>
+          <About />
+        </StackedSection>
+
+        <StackedSection id="skills" index={2}>
+          <Skills />
+        </StackedSection>
+
+        <StackedSection id="work" index={3}>
+          <Projects />
+        </StackedSection>
+
+        <StackedSection id="experience" index={4}>
+          <Experience />
+        </StackedSection>
+
+        <StackedSection id="contact" index={5} tone="last">
+          <Contact />
+          <Footer />
+        </StackedSection>
       </main>
-      <Footer />
     </div>
   )
 }
