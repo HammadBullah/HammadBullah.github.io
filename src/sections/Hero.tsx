@@ -22,7 +22,7 @@ export default function Hero() {
               <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
             </span>
             <span className="font-mono text-xs uppercase tracking-[0.2em] text-paper-500">
-              Available for work · Rotterdam, NL
+              Available for work · Hatfield, UK
             </span>
           </motion.div>
 

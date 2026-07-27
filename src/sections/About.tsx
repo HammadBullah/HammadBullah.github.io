@@ -8,7 +8,7 @@ const paragraphs = [
   accuracy and clean data pipelines as I do about the latency of a button press and the
   weight of a typeface. The best software, in my view, is the kind that disappears.`,
   `Outside of the editor you'll find me reading about distributed systems, tinkering with
-  time-series models, or chasing a decent cup of coffee around Rotterdam.`,
+  time-series models, or chasing a decent cup of coffee around Hertfordshire.`,
 ]
 
 export default function About() {
@@ -47,7 +47,7 @@ export default function About() {
 
             {/* Quick facts */}
             <div className="mt-16 grid grid-cols-2 gap-x-8 gap-y-6 sm:grid-cols-3">
-              <Fact k="Location" v="Rotterdam, NL" />
+              <Fact k="Location" v="Hatfield, UK" />
               <Fact k="Education" v="MSc Adv. Computer Science" />
               <Fact k="University" v="University of Hertfordshire" />
               <Fact k="Email" v="hammabdullah@gmail.com" />
