@@ -1,32 +1,121 @@
+import { useEffect, useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
-import { Code2, Brain, Smartphone } from "lucide-react";
-import Tilt from "react-parallax-tilt";
 import { SplitText } from "../components/SplitText";
 
-const STATS = [
-  { label: "Years coding", value: "4+" },
-  { label: "Projects shipped", value: "15+" },
-  { label: "MSc focus", value: "AI/ML" },
-  { label: "Stack", value: "End-to-end" },
-];
+const SOURCE = `const developer = {
+  name: "Hammad Safi",
+  role: "Software Developer",
+  education: "MSc Advanced Computer Science",
+  interests: [
+    "Artificial Intelligence",
+    "Full Stack Development",
+    "Machine Learning",
+    "Cloud",
+    "Prompt Engineering",
+  ],
+  currentlyBuilding: "AI Prompt Coaching System",
+  status: "open to opportunities",
+};
+`;
 
-const FOCUS = [
-  { icon: Brain,      title: "AI & Computer Vision", body: "Deep-learning pipelines with YOLO, LSTMs, TensorFlow and OpenCV — turning research into production-grade systems." },
-  { icon: Smartphone, title: "Mobile & Cross-Platform", body: "Flutter and Dart for high-fidelity iOS/Android experiences, with clean architecture and Firebase." },
-  { icon: Code2,      title: "Web & Systems", body: "Performant, accessible web apps with React/Next.js, Node and cloud primitives on AWS." },
-];
+type Tok = { t: string; c?: string }[];
+
+function tokenize(src: string): Tok {
+  // naive highlighter
+  const out: Tok = [];
+  const keywords = ["const", "new", "true", "false", "null", "undefined", "var", "let", "status", "open"];
+  const re = /(\/\/[^\n]*|"(?:[^"\\]|\\.)*"|\b\d+\b|\b[A-Za-z_$][\w$]*\b|\s+|[{}()[\],:;])/g;
+  let m;
+  while ((m = re.exec(src))) {
+    let tok = m[0];
+    let c: string | undefined;
+    if (tok.startsWith("//")) c = "tok-com";
+    else if (tok.startsWith('"')) c = "tok-str";
+    else if (/^\d+$/.test(tok)) c = "tok-num";
+    else if (keywords.includes(tok)) c = "tok-key";
+    else if (/^[A-Za-z_$]/.test(tok)) {
+      // check if followed by :
+      const next = src.slice(re.lastIndex).match(/^\s*:/);
+      if (next) c = "tok-prop";
+    }
+    out.push({ t: tok, c });
+  }
+  return out;
+}
+
+const TOKS = tokenize(SOURCE);
+
+function CodeWindow({ typing = true }: { typing?: boolean }) {
+  const [count, setCount] = useState(typing ? 0 : TOKS.length);
+  const cursorRef = useRef<HTMLSpanElement>(null);
+  useEffect(() => {
+    if (!typing) return;
+    let i = 0;
+    let last = performance.now();
+    const id = setInterval(() => {
+      i++;
+      setCount(i);
+      if (i >= TOKS.length) clearInterval(id);
+    }, 18);
+    return () => clearInterval(id);
+  }, [typing]);
+
+  // split into lines
+  const lines: { ln: number; toks: Tok }[] = [];
+  let cur: Tok = [];
+  let ln = 1;
+  TOKS.slice(0, count).forEach((tok) => {
+    const parts = tok.t.split("\n");
+    parts.forEach((p, i) => {
+      if (i > 0) {
+        lines.push({ ln, toks: cur });
+        cur = [];
+        ln++;
+      }
+      if (i === 0 && cur.length === 0 && p === "") {
+        // just newline
+        lines.push({ ln, toks: cur });
+        ln++;
+      } else {
+        cur.push({ t: p, c: tok.c });
+      }
+    });
+  });
+  lines.push({ ln, toks: cur });
+
+  return (
+    <div className="code-window">
+      <div className="lights">
+        <i className="r" /><i className="y" /><i className="g" />
+        <span className="title">developer.ts — hammad.safi</span>
+      </div>
+      <div className="code-body">
+        {lines.map((l, i) => (
+          <div key={i} className="line">
+            <span className="ln mono">{l.ln}</span>
+            <span className="lc">
+              {l.toks.map((tt, j) => (
+                <span key={j} className={tt.c ?? ""}>{tt.t}</span>
+              ))}
+              {i === lines.length - 1 && <span ref={cursorRef} className="blinker" />}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export function About() {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start 0.9", "end 0.3"] });
-  const imgY = useTransform(scrollYProgress, [0, 1], [40, -40]);
+  const parallax = useTransform(scrollYProgress, [0, 1], [30, -30]);
 
   return (
     <section id="about" ref={ref} className="relative py-28 md:py-40 section">
-      <div className="noise-layer" />
-      <div className="container-x">
-        <header className="flex items-end justify-between gap-6 flex-wrap mb-16">
+      <div className="noise" />
+      <div className="container-x relative">
+        <header className="flex items-end justify-between gap-6 flex-wrap mb-14">
           <div className="max-w-3xl">
             <motion.p
               initial={{ opacity: 0, y: 10 }}
@@ -40,120 +129,53 @@ export function About() {
             <SplitText
               as="h2"
               className="font-display text-4xl md:text-6xl tracking-tight"
-              text="I build calm, intelligent software that bridges complex AI and the interfaces people actually use."
+              text="Code tells the story. Here's mine."
             />
           </div>
-          <motion.p
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="max-w-md text-soft text-base md:text-lg leading-relaxed"
-          >
-            MSc Advanced Computer Science candidate at the University of Hertfordshire,
-            specialising in computer vision, deep learning and cross-platform engineering.
-            I care about clarity, performance and craft.
-          </motion.p>
         </header>
 
-        <div className="grid lg:grid-cols-12 gap-10 lg:gap-12 items-start">
-          {/* Tilt portrait/visual */}
-          <motion.div
-            style={{ y: imgY }}
-            initial={{ opacity: 0, y: 40, scale: 0.98 }}
-            whileInView={{ opacity: 1, y: 0, scale: 1 }}
-            viewport={{ once: true, margin: "-80px" }}
-            transition={{ duration: 1, ease: [0.22,1,0.36,1] }}
-            className="lg:col-span-5"
-          >
-            <Tilt
-              glareEnable
-              glareMaxOpacity={0.25}
-              glareColor="#ffffff"
-              glarePosition="all"
-              tiltMaxAngleX={5}
-              tiltMaxAngleY={5}
-              className="relative rounded-3xl overflow-hidden border hairline aspect-[4/5] tilt-card bg-soft"
-            >
-              <div
-                className="absolute inset-0"
-                style={{
-                  background:
-                    "radial-gradient(120% 80% at 20% 10%, color-mix(in srgb, var(--accent) 35%, transparent), transparent 60%), radial-gradient(100% 80% at 80% 90%, color-mix(in srgb, var(--accent-2) 35%, transparent), transparent 60%)",
-                }}
-              />
-              <div className="absolute inset-0 noise-layer" />
-              <div className="absolute inset-0 flex items-end p-8">
-                <div>
-                  <div className="inline-flex items-center gap-2 chip mb-4">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                    Currently building
-                  </div>
-                  <p className="text-2xl font-semibold tracking-tight leading-tight">
-                    Building AI systems <br />
-                    <span className="text-soft font-normal">with care.</span>
-                  </p>
-                </div>
-              </div>
-              <div className="absolute top-6 right-6 font-mono text-[10px] tracking-widest text-soft/70 rotate-90 origin-top-right">
-                HAMMAD · SAFI · 2026
-              </div>
-            </Tilt>
+        <div className="grid lg:grid-cols-12 gap-10 lg:gap-14 items-start">
+          <motion.div style={{ y: parallax }} className="lg:col-span-7">
+            <CodeWindow />
           </motion.div>
 
-          {/* Copy + stats */}
-          <div className="lg:col-span-7 space-y-10">
-            <div className="grid sm:grid-cols-3 gap-4">
-              {FOCUS.map((f, i) => (
-                <motion.div
-                  key={f.title}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-60px" }}
-                  transition={{ duration: 0.6, delay: i * 0.08, ease: [0.22,1,0.36,1] }}
-                  className="rounded-2xl border hairline p-6 bg-elev hover:shadow-[var(--shadow-soft)] transition-shadow group"
-                >
-                  <div className="w-9 h-9 rounded-lg bg-[var(--accent)]/10 text-[var(--accent)] grid place-items-center mb-5 group-hover:bg-[var(--accent)] group-hover:text-white transition-colors">
-                    <f.icon size={17} />
-                  </div>
-                  <h3 className="text-[15px] font-semibold mb-1.5 tracking-tight">{f.title}</h3>
-                  <p className="text-[13px] leading-relaxed text-soft">{f.body}</p>
-                </motion.div>
-              ))}
-            </div>
-
-            <motion.div
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="grid grid-cols-2 sm:grid-cols-4 gap-px rounded-2xl overflow-hidden border hairline bg-[var(--hairline)]"
-            >
-              {STATS.map((s, i) => (
-                <motion.div
-                  key={s.label}
-                  initial={{ opacity: 0, y: 10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: 0.25 + i * 0.06 }}
-                  className="bg-[var(--bg)] p-6"
-                >
-                  <p className="font-display text-3xl md:text-4xl font-semibold tracking-tight mb-1">{s.value}</p>
-                  <p className="text-[12px] text-soft">{s.label}</p>
-                </motion.div>
-              ))}
-            </motion.div>
-
+          <div className="lg:col-span-5 space-y-6">
             <motion.p
               initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.7, delay: 0.3 }}
-              className="text-soft leading-relaxed max-w-xl"
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="text-soft leading-relaxed text-[15px] md:text-base"
             >
-              I care about the <span className="text-[var(--fg)]">edges</span> — the moments where
-              software meets people. That's where tiny details turn into trust.
+              I like software that feels considered — fast, honest, and a little bit delightful.
+              My work sits where AI meets product: turning research-grade models into
+              reliable applications people actually want to use.
             </motion.p>
+            <motion.p
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="text-soft leading-relaxed text-[15px] md:text-base"
+            >
+              Right now I'm building an <span className="text-[var(--fg)] font-medium">AI Prompt Coaching System</span> —
+              a tool that helps people write better prompts by analysing intent, surfacing
+              missing dimensions, and reconstructing stronger versions.
+            </motion.p>
+
+            <div className="pt-4 grid grid-cols-2 gap-3">
+              {[
+                ["Location", "Hatfield, UK"],
+                ["Education", "MSc Adv. CS"],
+                ["Focus", "AI · Full-Stack"],
+                ["Availability", "Open to work"],
+              ].map(([k, v]) => (
+                <div key={k} className="rounded-xl border hairline p-4 bg-elev/60">
+                  <p className="eyebrow mb-1">{k}</p>
+                  <p className="font-medium text-[14px]">{v}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

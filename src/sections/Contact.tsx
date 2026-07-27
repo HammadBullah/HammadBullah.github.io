@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ArrowUpRight, Mail, Phone } from "lucide-react";
+import { ArrowUpRight, Download, Mail, Phone, ArrowUp } from "lucide-react";
 import { MagneticButton } from "../components/MagneticButton";
 import { SplitText } from "../components/SplitText";
 
@@ -29,94 +29,50 @@ export function Contact() {
   return (
     <section id="contact" className="relative py-28 md:py-44 section overflow-hidden">
       <div className="absolute inset-0 -z-10 pointer-events-none">
-        <div className="aurora" style={{ width: 620, height: 620, left: "50%", top: "-10%", transform: "translateX(-50%)", background: "var(--blob-1)" }} />
-        <div className="aurora" style={{ width: 480, height: 480, right: "-10%", bottom: "-10%", background: "var(--blob-2)" }} />
-        <div className="noise-layer" />
+        <div className="aurora" style={{width:700,height:700,left:"50%",top:"-12%",transform:"translateX(-50%)",background:"var(--blob-1)"}}/>
+        <div className="aurora" style={{width:480,height:480,right:"-8%",bottom:"-8%",background:"var(--blob-2)"}}/>
+        <div className="noise"/>
       </div>
 
-      <div className="max-w-5xl mx-auto text-center">
-        <motion.p
-          initial={{ opacity: 0, y: 10 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="eyebrow mb-6"
-        >
-          05 — Contact
+      <div className="max-w-5xl mx-auto text-center relative z-10">
+        <motion.p initial={{opacity:0,y:10}} whileInView={{opacity:1,y:0}} viewport={{once:true}} transition={{duration:.6}} className="eyebrow mb-6">06 — Contact</motion.p>
+
+        <SplitText as="h2" className="font-display font-semibold text-5xl md:text-[clamp(3rem,7vw,6.2rem)] tracking-tight leading-[1.03]" text="Let's build something amazing together."/>
+
+        <motion.p initial={{opacity:0,y:10}} whileInView={{opacity:1,y:0}} viewport={{once:true}} transition={{duration:.7, delay:.2}} className="mt-6 text-soft text-lg max-w-xl mx-auto leading-relaxed">
+          Currently <span className="text-[var(--fg)] font-medium">open to opportunities</span> across AI, full-stack and mobile.
+          Drop a note — I usually reply within 24 hours.
         </motion.p>
 
-        <SplitText
-          as="h2"
-          className="font-display font-semibold text-5xl md:text-[clamp(3rem,7vw,6.5rem)] tracking-tight leading-[1.05]"
-          text="Have a project in mind? Let's make it real."
-          delay={0.05}
-          stagger={0.015}
-        />
-
-        <motion.p
-          initial={{ opacity: 0, y: 10 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7, delay: 0.2 }}
-          className="mt-6 text-soft text-lg max-w-xl mx-auto"
-        >
-          Whether it's an AI product, a polished mobile app or a sharp marketing site —
-          I'd love to hear about it.
-        </motion.p>
-
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7, delay: 0.35 }}
-          className="mt-10 flex flex-wrap justify-center gap-3"
-        >
-          <MagneticButton
-            as="a"
-            href="mailto:hammabdullah@gmail.com"
-            className="btn-primary !px-7 !py-3.5 text-[14px] arrow-slide"
-          >
-            <Mail size={15} /> hammabdullah@gmail.com
+        <motion.div initial={{opacity:0,y:10}} whileInView={{opacity:1,y:0}} viewport={{once:true}} transition={{duration:.7, delay:.3}} className="mt-10 flex flex-wrap justify-center gap-3">
+          <MagneticButton as="a" href="mailto:hammabdullah@gmail.com" className="btn-primary !px-6 !py-3 text-[14px] arrow-slide">
+            <Mail size={15}/> hammabdullah@gmail.com
           </MagneticButton>
-          <MagneticButton
-            as="a"
-            href="https://linkedin.com/in/hammad-safi"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn-secondary !px-7 !py-3.5 text-[14px] arrow-slide"
-          >
-            Connect on LinkedIn <ArrowUpRight size={15} />
+          <MagneticButton as="a" href="/resume.pdf" className="btn-secondary !px-6 !py-3 text-[14px] arrow-slide" download>
+            <Download size={15}/> Download résumé
+          </MagneticButton>
+          <MagneticButton as="a" href="https://linkedin.com/in/hammad-safi" target="_blank" rel="noopener" className="btn-secondary !px-6 !py-3 text-[14px] arrow-slide">
+            <LinkedinIcon/> LinkedIn <ArrowUpRight size={15}/>
           </MagneticButton>
         </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.5 }}
-          className="mt-16 flex flex-wrap justify-center gap-3"
-        >
-          {SOCIALS.map((s) => (
-            <a
-              key={s.label}
-              href={s.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={s.label}
-              className="group relative w-11 h-11 rounded-full border hairline grid place-items-center hover:text-[var(--accent)] hover:border-[color-mix(in_srgb,var(--accent)_50%,var(--hairline))] transition-colors"
-            >
-              <s.icon />
-              <span className="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity text-[10px] tracking-widest text-soft font-mono">
-                {s.label}
-              </span>
+        <motion.div initial={{opacity:0}} whileInView={{opacity:1}} viewport={{once:true}} transition={{duration:.8, delay:.5}} className="mt-14 flex flex-wrap justify-center gap-3">
+          {SOCIALS.map(s => (
+            <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" aria-label={s.label} data-cursor="link"
+               className="group relative w-11 h-11 rounded-full border hairline grid place-items-center hover:text-[var(--accent)] hover:border-[color-mix(in_srgb,var(--accent)_50%,var(--hair))] transition-colors">
+              <s.icon/>
+              <span className="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity text-[10px] tracking-widest text-soft mono">{s.label}</span>
             </a>
           ))}
         </motion.div>
       </div>
 
       <footer className="relative mt-28 max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-4 text-[13px] text-soft border-t hairline pt-8 px-1">
-        <p>© {new Date().getFullYear()} Hammad Safi. Crafted with care.</p>
-        <p className="font-mono text-[11px] tracking-widest text-mute">v2.0 · DESIGNED IN HATFIELD</p>
+        <p>© {new Date().getFullYear()} Hammad Safi. Handcrafted with care.</p>
+        <div className="flex items-center gap-4">
+          <span className="mono text-[11px] tracking-widest text-mute">v3.0 · BUILT IN HATFIELD</span>
+          <a href="#top" data-cursor="link" className="link-u inline-flex items-center gap-1 text-[13px]">Back to top <ArrowUp size={13}/></a>
+        </div>
       </footer>
     </section>
   );

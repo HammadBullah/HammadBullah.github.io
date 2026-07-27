@@ -9,6 +9,7 @@ interface MagneticButtonProps {
   href?: string;
   target?: string;
   rel?: string;
+  download?: boolean | string;
   as?: "button" | "a";
   strength?: number;
   scrollTo?: string; // CSS selector for lenis
@@ -24,6 +25,7 @@ export const MagneticButton = ({
   as,
   strength = 0.3,
   scrollTo,
+  download,
 }: MagneticButtonProps) => {
   const Tag: any = as === "a" ? motion.a : motion.button;
   const [ref, { left, top, width, height }] = useMeasure();
@@ -88,6 +90,7 @@ export const MagneticButton = ({
       href={href}
       target={target}
       rel={rel}
+      download={download}
       style={{ x: springX, y: springY }}
       className={`relative overflow-hidden ${className ?? ""}`}
     >
