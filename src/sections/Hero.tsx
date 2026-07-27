@@ -8,13 +8,13 @@ const item = {
 
 export default function Hero() {
   return (
-    <section className="relative pt-40 pb-24 md:pt-52 md:pb-32">
-      <div className="container-x">
+    <section className="relative flex h-full min-h-svh items-center pt-24 pb-16 md:pt-28">
+      <div className="container-x w-full">
         <motion.div
           initial="hidden"
           animate="show"
-          variants={{ show: { transition: { staggerChildren: 0.1, delayChildren: 0.15 } } }}
-          className="space-y-10"
+          variants={{ show: { transition: { staggerChildren: 0.08, delayChildren: 0.1 } } }}
+          className="space-y-8 md:space-y-10"
         >
           <motion.div variants={item} className="flex items-center gap-3">
             <span className="relative flex h-2 w-2">
@@ -28,7 +28,7 @@ export default function Hero() {
 
           <motion.h1
             variants={item}
-            className="max-w-4xl text-5xl font-light leading-[1.05] tracking-tightest md:text-7xl lg:text-[6.5rem]"
+            className="max-w-5xl text-5xl font-light leading-[1.02] tracking-tightest md:text-7xl lg:text-[5.5rem]"
           >
             <span className="block">Hammad Safi.</span>
             <span className="block">
@@ -44,19 +44,15 @@ export default function Hero() {
 
           <motion.div
             variants={item}
-            className="flex flex-col gap-6 pt-4 md:flex-row md:items-end md:justify-between"
+            className="flex flex-col gap-6 pt-2 md:flex-row md:items-end md:justify-between"
           >
-            <p className="max-w-xl text-lg text-paper-600 dark:text-paper-400 md:text-xl">
-              MSc Advanced Computer Science. I design and ship intelligent products across
-              machine learning, full-stack web, and mobile — with an eye for quiet,
-              considered interfaces.
+            <p className="max-w-xl text-base text-paper-600 dark:text-paper-400 md:text-lg">
+              MSc Advanced Computer Science. Designing intelligent products across
+              machine learning, full-stack web, and mobile.
             </p>
 
             <div className="flex items-center gap-6">
-              <a
-                href="#work"
-                className="group inline-flex items-center gap-2 text-sm font-medium"
-              >
+              <a href="#work" className="group inline-flex items-center gap-2 text-sm font-medium">
                 <span className="link-underline">View selected work</span>
                 <ArrowDownRight
                   size={16}
@@ -72,14 +68,19 @@ export default function Hero() {
             </div>
           </motion.div>
 
-          {/* Meta strip */}
-          <motion.div variants={item} className="hairline pt-8">
-            <div className="grid grid-cols-2 gap-y-6 md:grid-cols-4">
+          <motion.div variants={item} className="hairline pt-6">
+            <div className="grid grid-cols-2 gap-y-4 md:grid-cols-4">
               <Meta label="Currently" value="MSc @ Hertfordshire" />
               <Meta label="Focus" value="ML · Full-stack · Mobile" />
               <Meta label="Stack" value="Python · TS · React · Flutter" />
               <Meta label="Status" value="Open to roles" />
             </div>
+          </motion.div>
+
+          <motion.div variants={item} className="flex justify-center pt-4">
+            <span className="font-mono text-[10px] uppercase tracking-[0.3em] text-paper-400 dark:text-paper-600 animate-pulse">
+              scroll ↓
+            </span>
           </motion.div>
         </motion.div>
       </div>
@@ -90,7 +91,7 @@ export default function Hero() {
 function Meta({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <div className="section-label mb-1.5">{label}</div>
+      <div className="section-label mb-1">{label}</div>
       <div className="text-sm text-paper-800 dark:text-paper-200">{value}</div>
     </div>
   )
