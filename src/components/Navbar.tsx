@@ -1,60 +1,93 @@
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import { Terminal } from "lucide-react";
+import { useEffect, useState } from 'react'
+import { Moon, Sun } from 'lucide-react'
+import { useTheme } from '../context/ThemeContext'
+import { cn } from '../lib/utils'
 
-const LINKS = [
-  { label: "Profile",    href: "#about" },
-  { label: "Matrix",     href: "#skills" },
-  { label: "Archive",    href: "#projects" },
-  { label: "Chronicle",  href: "#experience" },
-  { label: "Transmit",   href: "#contact" },
-];
+const links = [
+  { label: 'About', href: '#about' },
+  { label: 'Work', href: '#work' },
+  { label: 'Experience', href: '#experience' },
+  { label: 'Contact', href: '#contact' },
+]
 
-interface Props { onOpenTerminal: ()=>void; }
+export default function Navbar() {
+  const { theme, toggle } = useTheme()
+  const [scrolled, setScrolled] = useState(false)
+  const [time, setTime] = useState('')
 
-export function Navbar({ onOpenTerminal }: Props) {
-  const [s, setS] = useState(0);
-  useEffect(()=>{
-    const on = ()=>setS(window.scrollY);
-    on(); window.addEventListener("scroll",on,{passive:true});
-    return ()=>window.removeEventListener("scroll",on);
-  },[]);
-  const scrolled = s > 40;
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  useEffect(() => {
+    const update = () => {
+      const now = new Date()
+      setTime(
+        now.toLocaleTimeString('en-GB', {
+          hour: '2-digit',
+          minute: '2-digit',
+          timeZone: 'Europe/London',
+        }) + ' GMT'
+      )
+    }
+    update()
+    const id = setInterval(update, 30_000)
+    return () => clearInterval(id)
+  }, [])
+
   return (
-    <motion.header
-      initial={{y:-30,opacity:0}} animate={{y:0,opacity:1}} transition={{duration:.9,ease:[0.22,1,0.36,1],delay:.2}}
-      className="fixed top-4 inset-x-0 z-50 flex justify-center px-4"
+    <header
+      className={cn(
+        'fixed inset-x-0 top-0 z-50 transition-all duration-500 ease-out-expo',
+        scrolled ? 'py-3' : 'py-6'
+      )}
     >
-      <nav className={`flex items-center justify-between gap-3 px-3 py-2 transition-all ${scrolled?"hud":""}`}
-           style={{width:"100%",maxWidth:1100, borderRadius: scrolled? 8:0, border: scrolled? undefined:"1px solid transparent"}}>
-        <a href="#top" className="flex items-center gap-2 pl-2 pr-3">
-          <span className="w-7 h-7 grid place-items-center border border-[var(--cyan)] text-[var(--cyan)] text-[10px] tech"
-                style={{clipPath:"polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px)",boxShadow:"var(--glow-c)"}}>
-            HS
-          </span>
-          <span className="tech text-[12px] tracking-[0.25em] uppercase neon-c hidden sm:inline">H_Safi</span>
-        </a>
-        <ul className="hidden md:flex items-center gap-1 tech text-[11px] tracking-[0.2em] uppercase">
-          {LINKS.map(l=>(
-            <li key={l.href}>
-              <a href={l.href} data-cursor="link"
-                 className="px-3 py-2 text-[var(--ink-dim)] hover:text-[var(--cyan)] transition-colors hover:neon-c glitch" data-text={l.label}>
-                {l.label}
-              </a>
-            </li>
-          ))}
-        </ul>
-        <div className="flex items-center gap-2">
-          <button onClick={onOpenTerminal} aria-label="Terminal" data-cursor="link"
-            className="w-9 h-9 grid place-items-center border border-[rgba(0,240,255,.35)] text-[var(--cyan)] hover:bg-[rgba(0,240,255,.08)] transition-colors"
-            style={{clipPath:"polygon(6px 0,100% 0,100% calc(100% - 6px),calc(100% - 6px) 100%,0 100%,0 6px)",boxShadow:"var(--glow-c)"}}>
-            <Terminal size={14}/>
-          </button>
-          <a href="#contact" className="btn-hud hidden sm:inline-flex !px-4 !py-2 !text-[11px]">
-            INITIATE
+      <div className="container-x">
+        <nav
+          className={cn(
+            'flex items-center justify-between rounded-full border px-5 py-2.5 transition-all duration-500 ease-out-expo',
+            scrolled
+              ? 'border-paper-200/70 bg-paper-50/70 backdrop-blur-xl dark:border-paper-800/70 dark:bg-paper-950/60'
+              : 'border-transparent bg-transparent'
+          )}
+        >
+          <a href="#top" className="flex items-center gap-2 font-medium tracking-tight">
+            <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-paper-900 text-[0.7rem] font-semibold text-paper-50 dark:bg-paper-100 dark:text-paper-950">
+              HS
+            </span>
+            <span className="hidden sm:inline">Hammad Safi</span>
           </a>
-        </div>
-      </nav>
-    </motion.header>
-  );
+
+          <ul className="hidden items-center gap-1 md:flex">
+            {links.map(l => (
+              <li key={l.href}>
+                <a
+                  href={l.href}
+                  className="rounded-full px-3 py-1.5 text-sm text-paper-600 transition-colors hover:text-paper-900 dark:text-paper-400 dark:hover:text-paper-100"
+                >
+                  {l.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+
+          <div className="flex items-center gap-3">
+            <span className="hidden font-mono text-[11px] text-paper-400 md:inline dark:text-paper-500">
+              {time}
+            </span>
+            <button
+              onClick={toggle}
+              aria-label="Toggle theme"
+              className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-paper-200 text-paper-600 transition-all hover:border-paper-300 hover:text-paper-900 dark:border-paper-800 dark:text-paper-400 dark:hover:border-paper-700 dark:hover:text-paper-100"
+            >
+              {theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />}
+            </button>
+          </div>
+        </nav>
+      </div>
+    </header>
+  )
 }

@@ -1,158 +1,193 @@
-import { useRef, useState } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
-import { ArrowUpRight, Eye } from "lucide-react";
-import { MagneticButton } from "../components/MagneticButton";
-import { TiltCard } from "../components/TiltCard";
-import { SplitText } from "../components/SplitText";
+import { motion } from 'framer-motion'
+import { ArrowUpRight } from 'lucide-react'
 
-const PROJECTS = [
-  {
-    code: "PRJ-01", title: "DROWNING_DETECTION", tag:"COMPUTER VISION",
-    stack:["YOLOv9","TensorFlow","Python"],
-    body:"Real-time pool-safety monitor with low-latency inference, edge deployment and multi-channel alerting. Built to survive lighting variance and occlusions.",
-    metrics:[{k:"mAP@.5",v:"89%"},{k:"inference",v:"32 fps"},{k:"alert p95",v:"<700ms"}],
-    bg:"#00f0ff", accent:"#ff2bd6",
-    github:"https://github.com/HammadBullah", live:"#",
-  },
-  {
-    code: "PRJ-02", title: "PLUCK_N_PAY", tag:"MOBILE MARKETPLACE",
-    stack:["Flutter","Dart","Firebase"],
-    body:"Cross-platform bargaining marketplace with realtime negotiation, clean architecture, and anti-fraud signals. 60fps on mid-tier Android.",
-    metrics:[{k:"cold start",v:"2.2s"},{k:"crash-free",v:"99.7%"},{k:"latency",v:"RTC"}],
-    bg:"#ff2bd6", accent:"#7b5bff",
-    github:"https://github.com/HammadBullah", live:"#",
-  },
-  {
-    code: "PRJ-03", title: "WEATHER_LSTM", tag:"AI RESEARCH",
-    stack:["LSTM","Python","Research"],
-    body:"Comparative study of predictive models on meteorological time-series, with reproducible pipelines and rigorous evaluation against baselines.",
-    metrics:[{k:"RMSE",v:"0.18"},{k:"horizon",v:"24h"},{k:"models",v:"5"}],
-    bg:"#7b5bff", accent:"#30ffb4",
-    github:"https://github.com/HammadBullah", live:"#",
-  },
-  {
-    code: "PRJ-04", title: "SMART_AG", tag:"IOT / MOBILE",
-    stack:["IoT","Dart","Firebase"],
-    body:"Automated farm monitoring with threshold alerts, sensor mesh, and cross-platform dashboard. Battery life over 6 months per node.",
-    metrics:[{k:"battery",v:"6mo"},{k:"alerts",v:"<3s"},{k:"nodes",v:"32"}],
-    bg:"#30ffb4", accent:"#00f0ff",
-    github:"https://github.com/HammadBullah", live:"#",
-  },
-];
-
-function ProjectPreview({p, progress, start, end}:{p:typeof PROJECTS[0]; progress:any; start:number; end:number}){
-  const opacity = useTransform(progress,[start,start+0.08,end-0.08,end],[0,1,1,0]);
-  const y = useTransform(progress,[start,end],[100,-60]);
-  const scale = useTransform(progress,[start,start+0.08,end-0.08,end],[0.92,1,1,0.96]);
-  const rotX = useTransform(progress,[start,end],[8,-6]);
-  const blur = useTransform(progress,[start,start+0.08,end-0.08,end],["blur(14px)","blur(0)","blur(0)","blur(8px)"]);
-
-  return (
-    <motion.article style={{opacity,y,scale,rotateX:rotX,filter:blur}} className="absolute inset-0 p-4 md:p-10 flex items-center justify-center"
-      initial={{perspective:1200}}>
-      <TiltCard max={6} className="w-full max-w-6xl">
-        <div className="holo-card rounded-lg p-6 md:p-10 relative grid md:grid-cols-12 gap-6 items-center"
-             style={{background:`linear-gradient(135deg, ${p.bg}18, ${p.accent}14)`}}>
-          <span className="e-tl"/><span className="e-tr"/><span className="e-bl"/><span className="e-br"/>
-          {/* meta */}
-          <div className="md:col-span-12 flex items-center justify-between tech text-[10px] tracking-[.3em] uppercase">
-            <span className="neon-c">{p.code}</span>
-            <span style={{color:p.bg, textShadow:`0 0 10px ${p.bg}`}}>{p.tag}</span>
-          </div>
-          {/* holographic preview */}
-          <div className="md:col-span-7 relative aspect-[16/10] rounded-md overflow-hidden border"
-               style={{borderColor:`${p.bg}66`, boxShadow:`inset 0 0 40px ${p.bg}25, 0 0 30px ${p.bg}25`}}>
-            <div className="absolute inset-0" style={{background:`radial-gradient(circle at 30% 20%, ${p.bg}60, transparent 60%), linear-gradient(135deg, ${p.bg}20, ${p.accent}20)`}}/>
-            <svg viewBox="0 0 800 500" className="absolute inset-0 w-full h-full">
-              <g stroke={p.bg} strokeOpacity=".4" fill="none">
-                {Array.from({length:12}).map((_,i)=>(
-                  <line key={i} x1={i*70} y1="0" x2={i*70} y2="500" strokeWidth=".5"/>
-                ))}
-                {Array.from({length:8}).map((_,i)=>(
-                  <line key={i} x1="0" y1={i*70} x2="800" y2={i*70} strokeWidth=".5"/>
-                ))}
-                <path d="M40,380 C200,200 360,420 520,260 S740,340 780,240" strokeWidth="2" stroke={p.accent}/>
-              </g>
-              {Array.from({length:6}).map((_,i)=>(
-                <circle key={i} cx={120+i*110} cy={180+((i*37)%120)} r={4+i} fill={i%2?p.accent:p.bg} style={{filter:`drop-shadow(0 0 6px ${p.bg})`}}/>
-              ))}
-              <rect x="40" y="40" width="120" height="24" rx="4" fill={p.bg} fillOpacity=".25" stroke={p.bg}/>
-              <text x="52" y="57" fill="#fff" fontFamily="JetBrains Mono" fontSize="11">{p.title}</text>
-            </svg>
-            <motion.span aria-hidden animate={{top:["0%","100%"]}} transition={{duration:5,ease:"linear",repeat:Infinity}}
-              className="absolute left-0 right-0 h-[2px]" style={{background:`linear-gradient(90deg,transparent,${p.bg},transparent)`, boxShadow:`0 0 10px ${p.bg}`}}/>
-            <div className="absolute inset-0 pointer-events-none" style={{background:"repeating-linear-gradient(to bottom, rgba(255,255,255,.02) 0 1px, transparent 1px 3px)"}}/>
-          </div>
-          {/* copy */}
-          <div className="md:col-span-5 mono">
-            <h3 className="headline text-2xl md:text-4xl mb-3" style={{color:p.bg,textShadow:`0 0 14px ${p.bg}`}}>{p.title}</h3>
-            <p className="text-[var(--ink-dim)] leading-relaxed text-[13px] mb-5">{p.body}</p>
-            <div className="flex flex-wrap gap-2 mb-6">
-              {p.stack.map(s=>(
-                <span key={s} className="tech text-[10px] uppercase tracking-[.2em] px-2 py-1 border"
-                      style={{borderColor:`${p.bg}66`, color:p.bg, boxShadow:`0 0 10px ${p.bg}40`}}>{s}</span>
-              ))}
-            </div>
-            <div className="grid grid-cols-3 gap-2 mb-6">
-              {p.metrics.map(m=>(
-                <div key={m.k} className="border rounded px-2 py-2" style={{borderColor:`${p.bg}40`}}>
-                  <div className="text-[10px] uppercase tracking-[.2em] text-[var(--ink-mute)]">{m.k}</div>
-                  <div className="tech text-lg" style={{color:p.bg,textShadow:`0 0 10px ${p.bg}`}}>{m.v}</div>
-                </div>
-              ))}
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <MagneticButton as="a" href={p.github} target="_blank" rel="noopener" strength={0.2}
-                className="btn-hud !px-3 !py-2 !text-[10px]" style={{borderColor:p.bg,color:p.bg,boxShadow:`inset 0 0 12px ${p.bg}40, 0 0 14px ${p.bg}40`}}>
-                <span className="inline-grid place-items-center w-3 h-3"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d="M12 .5C5.73.5.77 5.46.77 11.73c0 4.94 3.2 9.13 7.64 10.61.56.1.77-.24.77-.54v-2.1c-3.11.68-3.77-1.33-3.77-1.33-.51-1.3-1.25-1.65-1.25-1.65-1.02-.7.08-.69.08-.69 1.13.08 1.72 1.17 1.72 1.17 1 1.72 2.63 1.22 3.27.93.1-.73.39-1.22.72-1.5-2.49-.29-5.11-1.25-5.11-5.57 0-1.23.44-2.23 1.16-3.02-.12-.29-.5-1.43.11-2.99 0 0 .95-.3 3.1 1.15a10.7 10.7 0 0 1 5.63 0c2.15-1.45 3.1-1.15 3.1-1.15.61 1.56.23 2.7.11 2.99.72.79 1.16 1.79 1.16 3.02 0 4.33-2.63 5.27-5.13 5.56.4.34.76 1.02.76 2.06v3.05c0 .3.21.65.78.54 4.43-1.48 7.63-5.67 7.63-10.61C23.23 5.46 18.27.5 12 .5Z"/></svg></span> SOURCE
-              </MagneticButton>
-              <MagneticButton as="a" href={p.live} target="_blank" rel="noopener" strength={0.2}
-                className="btn-hud magenta !px-3 !py-2 !text-[10px]">
-                <Eye size={12}/> PREVIEW
-              </MagneticButton>
-            </div>
-          </div>
-        </div>
-      </TiltCard>
-    </motion.article>
-  );
+type Project = {
+  id: string
+  year: string
+  title: string
+  role: string
+  summary: string
+  tags: string[]
+  metric?: { label: string; value: string }
+  color: string
+  bg: string
 }
 
-export function Projects() {
-  const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({target:ref, offset:["start start","end end"]});
-  const total = PROJECTS.length;
-  const step = 1/total;
-  const pad = step*0.22;
+const projects: Project[] = [
+  {
+    id: 'drowning',
+    year: '2024',
+    title: 'Drowning Detection System',
+    role: 'Computer Vision · Research',
+    summary:
+      'A real-time computer-vision pipeline built on YOLOv9 and TensorFlow that detects drowning events from overhead pool cameras at 32fps with 89% mAP@0.5 — designed to alert lifeguards within sub-second latency windows.',
+    tags: ['Python', 'YOLOv9', 'TensorFlow', 'OpenCV', 'CUDA'],
+    metric: { label: 'mAP@0.5 / FPS', value: '89% · 32fps' },
+    color: '#1e3a8a',
+    bg: 'from-blue-50 to-indigo-100 dark:from-blue-950/40 dark:to-indigo-950/40',
+  },
+  {
+    id: 'plucknpay',
+    year: '2023',
+    title: 'PlucknPay',
+    role: 'Mobile Full-Stack · Product',
+    summary:
+      'A Flutter marketplace connecting local farmers directly with consumers. Real-time inventory via Firebase, secure payments, and a clean transactional UI — shipped end-to-end from concept to store.',
+    tags: ['Flutter', 'Dart', 'Firebase', 'Stripe', 'Cloud Functions'],
+    metric: { label: 'Scope', value: 'Full product' },
+    color: '#14532d',
+    bg: 'from-emerald-50 to-green-100 dark:from-emerald-950/40 dark:to-green-950/40',
+  },
+  {
+    id: 'weather-lstm',
+    year: '2025',
+    title: 'Weather LSTM Forecasting',
+    role: 'MSc Research · Time Series',
+    summary:
+      'MSc dissertation work exploring stacked LSTM architectures for multivariate meteorological forecasting, benchmarked against classical ARIMA and Prophet baselines across European weather stations.',
+    tags: ['PyTorch', 'LSTM', 'Time Series', 'Pandas', 'Research'],
+    metric: { label: 'Type', value: 'MSc Thesis' },
+    color: '#7c2d12',
+    bg: 'from-orange-50 to-amber-100 dark:from-orange-950/40 dark:to-amber-950/40',
+  },
+  {
+    id: 'smart-agri',
+    year: '2023',
+    title: 'Smart Agriculture IoT',
+    role: 'IoT · Mobile Dashboard',
+    summary:
+      'A sensor-to-app agriculture platform: soil-moisture and climate data from ESP-based nodes, streamed to Firebase, and surfaced in a Flutter dashboard for remote farm monitoring and irrigation scheduling.',
+    tags: ['IoT', 'ESP32', 'Flutter', 'Firebase', 'Dart'],
+    metric: { label: 'Domain', value: 'AgriTech' },
+    color: '#365314',
+    bg: 'from-lime-50 to-green-100 dark:from-lime-950/40 dark:to-green-950/40',
+  },
+]
 
-  const tintA = useTransform(scrollYProgress, PROJECTS.map((_,i)=>i/(total-1)), PROJECTS.map(p=>p.bg) as any);
-  const tintOp = useTransform(scrollYProgress,[0,0.1,0.9,1],[0,.3,.3,0]);
-
+export default function Projects() {
   return (
-    <section id="projects" className="relative">
-      <div className="section pt-28 md:pt-36">
-        <div className="container-x">
-          <div className="flex items-center gap-3 mb-6"><span className="section-tag">03 // PROJECT ARCHIVE</span></div>
-          <SplitText as="h2" className="headline text-3xl md:text-5xl max-w-3xl neon-m" text="Holographic project nodes." />
-        </div>
-      </div>
-
-      <div ref={ref} style={{height:`${total*100}vh`}} className="relative">
-        <div className="sticky top-0 h-screen overflow-hidden">
-          <motion.div aria-hidden className="absolute inset-0 pointer-events-none"
-            style={{background:"radial-gradient(60% 60% at 50% 50%, var(--blob-c, #ff2bd6), transparent 70%)",
-                    opacity:tintOp, ["--blob-c" as any]:tintA, filter:"blur(120px)"}}/>
-          <div className="noise"/>
-          <div className="rail hidden md:block">
-            <motion.div className="fill" style={{height:useTransform(scrollYProgress,[0,1],["0%","100%"])}}/>
-            {PROJECTS.map((_,i)=>(<span key={i} className="rail-dot" style={{top:`${(i/(total-1))*100}%`}}/>))}
+    <section id="work" className="py-24 md:py-32">
+      <div className="container-x">
+        <div className="mb-16 grid gap-10 md:grid-cols-12">
+          <div className="md:col-span-3">
+            <div className="section-label">03 — Selected work</div>
           </div>
-          {PROJECTS.map((p,i)=>{
-            const s = Math.max(0,i*step-pad), e = Math.min(1,(i+1)*step+pad);
-            return <ProjectPreview key={p.code} p={p} progress={scrollYProgress} start={s} end={e}/>;
-          })}
+          <div className="md:col-span-9">
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-100px' }}
+              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] }}
+              className="max-w-2xl text-3xl font-light tracking-tight md:text-4xl"
+            >
+              A few things I've shipped — across research, product, and
+              <em className="font-serif italic"> everything in between</em>.
+            </motion.h2>
+          </div>
+        </div>
+
+        <div className="space-y-20 md:space-y-28">
+          {projects.map((p, i) => (
+            <ProjectCard key={p.id} p={p} index={i} />
+          ))}
         </div>
       </div>
     </section>
-  );
+  )
+}
+
+function ProjectCard({ p, index }: { p: Project; index: number }) {
+  const reverse = index % 2 === 1
+  return (
+    <motion.article
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-80px' }}
+      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] }}
+      className={`grid gap-8 md:grid-cols-12 md:gap-12 ${reverse ? 'md:[&>*:first-child]:order-2' : ''}`}
+    >
+      {/* Visual */}
+      <div className="md:col-span-7">
+        <div
+          className={`group relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-paper-200 bg-gradient-to-br ${p.bg} dark:border-paper-800`}
+        >
+          <ProjectArtwork color={p.color} />
+          <div className="absolute left-5 top-5 font-mono text-[11px] uppercase tracking-[0.2em] text-paper-600/70 dark:text-paper-300/70">
+            {p.id} · {p.year}
+          </div>
+          {p.metric && (
+            <div className="absolute bottom-5 right-5 rounded-full bg-white/70 px-3 py-1.5 font-mono text-xs text-paper-800 backdrop-blur dark:bg-paper-900/70 dark:text-paper-100">
+              {p.metric.label} — {p.metric.value}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Text */}
+      <div className="flex flex-col justify-center md:col-span-5">
+        <div className="section-label mb-3">{p.role}</div>
+        <h3 className="mb-4 text-2xl font-light tracking-tight md:text-3xl">{p.title}</h3>
+        <p className="mb-6 text-[15px] leading-relaxed text-paper-600 dark:text-paper-400">
+          {p.summary}
+        </p>
+        <div className="mb-6 flex flex-wrap gap-2">
+          {p.tags.map(t => (
+            <span
+              key={t}
+              className="rounded-full border border-paper-200 px-2.5 py-1 font-mono text-[11px] text-paper-600 dark:border-paper-800 dark:text-paper-400"
+            >
+              {t}
+            </span>
+          ))}
+        </div>
+        <div className="flex items-center gap-5 text-sm">
+          <a
+            href="#"
+            onClick={e => e.preventDefault()}
+            className="group/link inline-flex items-center gap-1.5 font-medium"
+          >
+            <span className="link-underline">Case study</span>
+            <ArrowUpRight
+              size={14}
+              className="transition-transform duration-300 group-hover/link:-translate-y-0.5 group-hover/link:translate-x-0.5"
+            />
+          </a>
+          <span className="text-paper-300 dark:text-paper-700">/</span>
+          <a
+            href="#"
+            onClick={e => e.preventDefault()}
+            className="inline-flex items-center gap-1.5 text-paper-600 transition-colors hover:text-paper-900 dark:text-paper-400 dark:hover:text-paper-100"
+          >
+            <span className="link-underline">Source</span>
+          </a>
+        </div>
+      </div>
+    </motion.article>
+  )
+}
+
+function ProjectArtwork({ color }: { color: string }) {
+  // Minimal abstract geometric artwork - pure SVG, no images needed
+  return (
+    <div className="absolute inset-0 flex items-center justify-center">
+      <svg viewBox="0 0 400 300" className="h-full w-full">
+        <defs>
+          <pattern id={`grid-${color}`} width="20" height="20" patternUnits="userSpaceOnUse">
+            <path d="M 20 0 L 0 0 0 20" fill="none" stroke={color} strokeWidth="0.3" opacity="0.25" />
+          </pattern>
+        </defs>
+        <rect width="400" height="300" fill={`url(#grid-${color})`} />
+        <g stroke={color} strokeWidth="1" fill="none" opacity="0.5">
+          <circle cx="200" cy="150" r="40" />
+          <circle cx="200" cy="150" r="70" />
+          <circle cx="200" cy="150" r="100" />
+        </g>
+        <circle cx="200" cy="150" r="12" fill={color} opacity="0.9" />
+        <g stroke={color} strokeWidth="0.8" fill="none" opacity="0.4">
+          <line x1="200" y1="0" x2="200" y2="300" strokeDasharray="2 4" />
+          <line x1="0" y1="150" x2="400" y2="150" strokeDasharray="2 4" />
+        </g>
+      </svg>
+    </div>
+  )
 }
