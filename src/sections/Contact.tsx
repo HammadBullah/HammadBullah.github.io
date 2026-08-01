@@ -1,119 +1,53 @@
-import { useState, useRef } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Send, Check, ArrowUpRight } from 'lucide-react'
+import { ArrowUpRight, Mail, Phone } from 'lucide-react'
+
+const InlineGithub = ({size=14}:{size?:number}) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.7.5.5 5.7.5 12.1c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.2.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.6-.3-5.3-1.3-5.3-5.8 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11 11 0 016 0c2.3-1.5 3.3-1.2 3.3-1.2.7 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.1 0 4.5-2.7 5.5-5.3 5.8.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6 4.6-1.5 7.8-5.8 7.8-10.9C23.5 5.7 18.3.5 12 .5z"/></svg>
+)
+const InlineLinkedin = ({size=14}:{size?:number}) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor"><path d="M19 3A2 2 0 0121 5v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h14zM8.3 18.3v-8H5.7v8h2.6zM7 9.1a1.5 1.5 0 100-3 1.5 1.5 0 000 3zm11.3 9.2v-4.4c0-2.3-1.2-3.4-2.9-3.4a2.5 2.5 0 00-2.3 1.2v-1h-2.6v8h2.6v-4.5c0-1.2.2-2.3 1.7-2.3s1.5 1.3 1.5 2.4v4.4h2z"/></svg>
+)
+
+const channels = [
+  { label: 'Email', value: 'hammabdullah@gmail.com', href: 'mailto:hammabdullah@gmail.com', Icon: Mail },
+  { label: 'LinkedIn', value: '/in/hammad-safi', href: 'https://www.linkedin.com/in/hammad-safi', Icon: InlineLinkedin },
+  { label: 'GitHub', value: '/HammadBullah', href: 'https://github.com/HammadBullah', Icon: InlineGithub },
+  { label: 'Phone', value: '+44 7352 664787', href: 'tel:+447352664787', Icon: Phone },
+]
 
 export default function Contact() {
-  const [state, setState] = useState<'idle'|'sending'|'sent'>('idle')
-  const formRef = useRef<HTMLDivElement>(null)
-
-  const onSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    setState('sending')
-    setTimeout(() => setState('sent'), 1600)
-    setTimeout(() => {
-      window.location.href = 'mailto:hammabdullah@gmail.com?subject=From%20portfolio&body=Hi%20Hammad,'
-    }, 1800)
-  }
-
-  const channels = [
-    { label: 'Email', value: 'hammabdullah@gmail.com', href: 'mailto:hammabdullah@gmail.com' },
-    { label: 'LinkedIn', value: '/in/hammad-safi', href: 'https://www.linkedin.com/in/hammad-safi' },
-    { label: 'GitHub', value: '/HammadBullah', href: 'https://github.com/HammadBullah' },
-    { label: 'Phone', value: '+44 7352 664787', href: 'tel:+447352664787' },
-  ]
-
   return (
-    <section className="relative w-full h-full">
-      <div className="scene-inner absolute inset-0 flex items-center">
-        <div className="container-x w-full relative">
-          <div className="mono text-[11px] uppercase tracking-[0.3em] text-orange mb-6">
-            // 05 · TRANSMIT
+    <section id="contact" className="section">
+      <div className="container">
+        <div className="mb-12 grid gap-6 md:grid-cols-12">
+          <div className="md:col-span-3"><div className="label">05 — Contact</div></div>
+          <div className="md:col-span-9">
+            <h2 className="text-4xl font-semibold tracking-tight md:text-6xl leading-[1.05]">
+              Have something <br/>
+              <span className="text-cyan">thoughtful</span> to build?
+            </h2>
+            <p className="mt-6 max-w-xl text-lg text-muted">
+              I'm open to full-time roles, research collaborations, and select freelance work.
+              Email is the best way to reach me — I reply within a day or two.
+            </p>
+            <a href="mailto:hammabdullah@gmail.com" className="btn-primary mt-8 bg-cyan text-bg hover:bg-white">
+              Say hello <ArrowUpRight size={16}/>
+            </a>
           </div>
-          <h2 className="text-white mb-10" style={{ fontSize: 'clamp(2.8rem,7vw,6.5rem)', fontWeight: 600, letterSpacing: '-0.03em', lineHeight: 0.95 }}>
-            Transmit <em className="font-serif italic text-cyan">signal</em>.<br/>
-            <span className="text-white/40">Let's build something</span><br/>
-            <span className="text-white/40"><em className="font-serif italic text-violet">thoughtful</em>.</span>
-          </h2>
-
-          <div ref={formRef} className="grid md:grid-cols-5 gap-6 items-end">
-            <form onSubmit={onSubmit} className="md:col-span-3 glass-panel rounded-xl p-6 space-y-4 relative overflow-hidden">
-              <div className="mono text-[10px] uppercase tracking-widest text-white/40 mb-2">COMPOSE MESSAGE</div>
-              <Field label="name" />
-              <Field label="email" type="email" />
-              <Field label="message" multiline />
-              <button type="submit" disabled={state !== 'idle'} data-cursor="hover"
-                className="btn-cyan w-full justify-center"
-                style={{ cursor: 'none' }}>
-                {state === 'idle' && (<><Send size={14}/> Transmit</>)}
-                {state === 'sending' && (<>Transmitting<span className="flex gap-0.5 ml-1"><i className="animate-bounce">.</i><i className="animate-bounce" style={{animationDelay:'0.1s'}}>.</i><i className="animate-bounce" style={{animationDelay:'0.2s'}}>.</i></span></>)}
-                {state === 'sent' && (<><Check size={14}/> Signal delivered</>)}
-              </button>
-
-              <AnimatePresence>
-                {state === 'sending' && (
-                  <motion.div
-                    initial={{ y: '100%' }} animate={{ y: '0%' }} exit={{ y: '-100%', opacity: 0 }}
-                    transition={{ duration: 1.5, ease: 'easeOut' }}
-                    className="absolute left-0 right-0 bottom-0 h-1 bg-gradient-to-r from-cyan via-violet to-orange shadow-glow-cyan"
-                  />
-                )}
-                {state === 'sent' && (
-                  <motion.div
-                    initial={{ scale: 0 }} animate={{ scale: 20, opacity: 0 }}
-                    transition={{ duration: 1.2 }}
-                    className="absolute left-1/2 bottom-10 w-3 h-3 rounded-full bg-cyan shadow-glow-cyan"
-                  />
-                )}
-              </AnimatePresence>
-            </form>
-
-            <div className="md:col-span-2 space-y-3">
-              {channels.map(c => (
-                <a key={c.label} href={c.href} target={c.href.startsWith('http')?'_blank':undefined} rel="noreferrer"
-                   data-cursor="hover"
-                   className="group block glass-panel rounded-xl p-4 transition-all hover:border-cyan/40 hover:shadow-glow-cyan">
-                  <div className="mono text-[10px] uppercase tracking-widest text-white/40">{c.label}</div>
-                  <div className="mt-1 text-white/90 flex items-center justify-between">
-                    <span className="text-sm">{c.value}</span>
-                    <ArrowUpRight size={14} className="opacity-40 group-hover:opacity-100 group-hover:text-cyan transition"/>
-                  </div>
-                </a>
-              ))}
-            </div>
-          </div>
+        </div>
+        <div className="hairline pt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {channels.map(c => (
+            <a key={c.label} href={c.href} target={c.href.startsWith('http')?'_blank':undefined} rel="noreferrer"
+               className="group block transition hover:-translate-y-0.5">
+              <div className="label mb-1.5 group-hover:text-cyan transition-colors">{c.label}</div>
+              <div className="flex items-center gap-1.5 text-sm text-white/80 group-hover:text-white">
+                <c.Icon size={14}/>
+                <span>{c.value}</span>
+                {c.href.startsWith('http') && <ArrowUpRight size={12} className="opacity-50"/>}
+              </div>
+            </a>
+          ))}
         </div>
       </div>
     </section>
-  )
-}
-
-function Field({ label, type = 'text', multiline }: { label: string; type?: string; multiline?: boolean }) {
-  const [focused, setFocused] = useState(false)
-  return (
-    <label className="block relative">
-      <span className="mono text-[10px] uppercase tracking-widest text-white/40">{label}</span>
-      {multiline ? (
-        <textarea
-          rows={3}
-          onFocus={()=>setFocused(true)} onBlur={()=>setFocused(false)}
-          className="mt-1 w-full bg-transparent border-b border-white/10 text-white/90 placeholder-white/20 py-2 outline-none focus:border-cyan transition resize-none"
-          placeholder={`> ${label}...`}
-          data-cursor="hover"
-        />
-      ) : (
-        <input
-          type={type}
-          onFocus={()=>setFocused(true)} onBlur={()=>setFocused(false)}
-          className="mt-1 w-full bg-transparent border-b border-white/10 text-white/90 placeholder-white/20 py-2 outline-none focus:border-cyan transition"
-          placeholder={`> ${label}...`}
-          data-cursor="hover"
-        />
-      )}
-      <motion.span
-        animate={{ scaleX: focused ? 1 : 0 }}
-        transition={{ duration: 0.4 }}
-        className="absolute left-0 -bottom-px h-px w-full bg-cyan shadow-glow-cyan origin-left"
-      />
-    </label>
   )
 }
