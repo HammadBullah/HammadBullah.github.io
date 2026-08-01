@@ -13,7 +13,7 @@ const entries: Entry[] = [
 export default function Experience() {
   const _ref = useRef<HTMLDivElement>(null)
   return (
-    <section className="scene relative" data-effect="rotate">
+    <section className="relative w-full h-full">
       <div className="scene-inner absolute inset-0 flex items-center">
         <div className="container-x w-full">
           <div className="mono text-[11px] uppercase tracking-[0.3em] text-orange mb-6">

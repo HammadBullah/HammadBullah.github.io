@@ -124,7 +124,7 @@ export default function Skills() {
   }, [])
 
   return (
-    <section className="scene relative" data-effect="zoom">
+    <section className="relative w-full h-full">
       <div className="scene-inner absolute inset-0 flex items-center">
         <div className="container-x w-full">
           <div className="mb-6 flex items-baseline justify-between">

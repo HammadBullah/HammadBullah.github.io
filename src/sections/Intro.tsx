@@ -50,13 +50,13 @@ export default function Intro({ onExplore }: { onExplore: () => void }) {
         s.style.opacity = '1'
         s.style.transform = 'translateY(0) scale(1)'
         s.style.filter = 'blur(0)'
-      }, 400 + i * 35)
+      }, 600 + i * 35)
     })
   }, [])
 
   return (
-    <section className="scene relative bg-[#0B0D10]" data-effect="zoom">
-      <div className="scene-inner absolute inset-0 flex items-center">
+    <section className="relative w-full h-full bg-[#0B0D10]">
+      <div className="scene-inner flex items-center absolute inset-0">
         <div className="container-x w-full">
           {/* Top status bar */}
           <div className="absolute left-8 top-10 flex items-center gap-6 mono text-[11px] uppercase tracking-[0.25em] text-white/40 z-10">
