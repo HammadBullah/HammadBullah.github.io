@@ -1,38 +1,16 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 
-type Theme = 'light' | 'dark'
-
-interface ThemeCtx {
-  theme: Theme
-  toggle: () => void
-  setTheme: (t: Theme) => void
-}
-
+type Theme = 'dark'
+interface ThemeCtx { theme: Theme }
 const ThemeContext = createContext<ThemeCtx | null>(null)
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setTheme] = useState<Theme>(() => {
-    if (typeof window === 'undefined') return 'light'
-    const stored = localStorage.getItem('theme') as Theme | null
-    if (stored === 'light' || stored === 'dark') return stored
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-  })
-
+  const theme: Theme = 'dark'
   useEffect(() => {
-    const root = document.documentElement
-    root.classList.toggle('dark', theme === 'dark')
-    localStorage.setItem('theme', theme)
-    const meta = document.querySelector('meta[name="theme-color"]')
-    if (meta) meta.setAttribute('content', theme === 'dark' ? '#120e08' : '#efe8d6')
-  }, [theme])
-
-  const toggle = () => setTheme(t => (t === 'dark' ? 'light' : 'dark'))
-
-  return (
-    <ThemeContext.Provider value={{ theme, toggle, setTheme }}>
-      {children}
-    </ThemeContext.Provider>
-  )
+    document.documentElement.classList.add('dark')
+    document.documentElement.classList.remove('light')
+  }, [])
+  return <ThemeContext.Provider value={{ theme }}>{children}</ThemeContext.Provider>
 }
 
 export function useTheme() {
