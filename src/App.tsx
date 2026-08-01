@@ -56,11 +56,13 @@ export default function App() {
         const total  = scenes.length
         const getDistance = () => (total - 1) * window.innerWidth
 
-        // Size the wrapper — GSAP may set it too, but we set it immediately so page has height
+        // Size the wrapper
         const applyHeight = () => { wrapper.style.height = `${getDistance() + window.innerHeight}px` }
         applyHeight()
+        // Initial inner width
+        gsap.set(inner, { width: () => total * window.innerWidth })
 
-        // Horizontal translation — scroll the inner track-left inside the pinned container
+        // Horizontal translation — pinned via CSS (sticky), no GSAP pin (which fights CSS sticky)
         const tween = gsap.to(inner, {
           x: () => -getDistance(),
           ease: 'none',
@@ -69,10 +71,7 @@ export default function App() {
             start: 'top top',
             end: () => `+=${getDistance()}`,
             scrub: 0.7,
-            pin: track,
-            pinSpacing: false,
             invalidateOnRefresh: true,
-            anticipatePin: 1,
           },
         })
 
