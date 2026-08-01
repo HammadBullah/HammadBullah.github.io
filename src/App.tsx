@@ -24,6 +24,12 @@ export default function App() {
   const innerRef = useRef<HTMLDivElement>(null)
   const [konami, setKonami] = useState(false)
 
+  // Safety: ensure UI appears even if boot animation gets interrupted
+  useEffect(() => {
+    const t = setTimeout(() => setBooted(true), 6000)
+    return () => clearTimeout(t)
+  }, [])
+
   // Light beam follows cursor
   useEffect(() => {
     const onMove = (e: MouseEvent) => {
@@ -40,11 +46,13 @@ export default function App() {
   // Boot reveal — fade content in
   useEffect(() => {
     if (!booted) return
-    gsap.fromTo(
-      'main',
-      { opacity: 0 },
-      { opacity: 1, duration: 1, ease: 'power2.out' }
-    )
+    const el = document.querySelector('main') as HTMLElement | null
+    if (el) {
+      requestAnimationFrame(() => {
+        el.style.transition = 'opacity 1s cubic-bezier(.16,1,.3,1)'
+        el.style.opacity = '1'
+      })
+    }
   }, [booted])
 
   // Horizontal scroll setup
@@ -55,7 +63,8 @@ export default function App() {
     if (!wrapper || !inner) return
 
     const ctx = gsap.context(() => {
-      const scenes = gsap.utils.toArray<HTMLElement>('.scene', inner)
+      // Scenes are the outermost div.scene wrappers (each holds one <section.scene>)
+      const scenes = gsap.utils.toArray<HTMLElement>('.scene-wrapper', inner)
       const total = scenes.length
       const distance = () => (total - 1) * window.innerWidth
 
@@ -78,10 +87,11 @@ export default function App() {
         },
       })
 
-      // Per-scene enter animations
-      scenes.forEach((scene, i) => {
-        const ic = scene.querySelector('.scene-inner') as HTMLElement | null
-        if (!ic) return
+      // Per-scene enter animations — look inside each wrapper for the inner <section>
+      scenes.forEach((wrapper, i) => {
+        const scene = wrapper.querySelector('section.scene') as HTMLElement | null
+        const ic = scene?.querySelector('.scene-inner') as HTMLElement | null
+        if (!scene || !ic) return
         const start = () => `top+=${i * window.innerWidth + window.innerWidth * 0.2} top`
         const end = () => `top+=${i * window.innerWidth + window.innerWidth * 0.8} top`
         const effect = scene.dataset.effect
@@ -156,15 +166,15 @@ export default function App() {
       <div className="scanlines"/>
 
       {/* Horizontal scroll world */}
-      <main style={{ opacity: 0 }}>
+      <main className="opacity-0" data-boot-content>
         <div ref={wrapperRef} className="hscroll-wrapper">
           <div ref={innerRef} className="hscroll-inner">
-            <div className="scene"><Intro onExplore={() => goTo('about')}/></div>
-            <div className="scene"><About/></div>
-            <div className="scene"><Skills/></div>
-            <div className="scene"><Projects/></div>
-            <div className="scene"><Experience/></div>
-            <div className="scene"><Contact/></div>
+            <div className="scene-wrapper"><div className="scene"><Intro onExplore={() => goTo('about')}/></div></div>
+            <div className="scene-wrapper"><div className="scene"><About/></div></div>
+            <div className="scene-wrapper"><div className="scene"><Skills/></div></div>
+            <div className="scene-wrapper"><div className="scene"><Projects/></div></div>
+            <div className="scene-wrapper"><div className="scene"><Experience/></div></div>
+            <div className="scene-wrapper"><div className="scene"><Contact/></div></div>
           </div>
         </div>
       </main>
