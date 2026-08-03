@@ -3,126 +3,398 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Hammad Safi — AI & Software Engineer" />
-  <meta name="theme-color" content="#0B0D10" />
-  <title>Hammad Safi — AI & Software Engineer</title>
+  <meta name="description" content="Hammad Safi" />
+  <meta name="theme-color" content="#000000" />
+  <title>Hammad Safi</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+    html { scroll-behavior: auto; }
     body {
-      min-height: 100vh;
-      background: #0B0D10;
-      color: #E5E9F0;
-      font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, sans-serif;
+      background: #000;
+      color: #fff;
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
+      overflow-x: hidden;
+    }
+    /* Fixed background canvas — acts as our "video" */
+    #bg {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      display: block;
+    }
+    /* Vignette / grain overlay for cinematic feel */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.75) 100%);
+    }
+    .grain {
+      position: fixed;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+      opacity: 0.05;
+      mix-blend-mode: overlay;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    }
+    /* Scroll container — tall so there's enough scroll range */
+    #scroll-space {
+      position: relative;
+      z-index: 10;
+      /* Height drives how many "scenes" we have — 6 viewports */
+      height: 600vh;
+      width: 100%;
+    }
+    /* Scene indicator in center (minimal — content will be added later) */
+    #indicator {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 20;
+      font-family: 'SF Mono', ui-monospace, monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
       display: flex;
       align-items: center;
-      justify-content: center;
-      padding: 2rem;
-      line-height: 1.6;
+      gap: 0.6rem;
+      mix-blend-mode: difference;
     }
-    main {
-      width: 100%;
-      max-width: 640px;
+    #indicator .bar {
+      display: flex;
+      gap: 4px;
     }
-    .dot {
+    #indicator .bar span {
       display: inline-block;
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      background: #22c55e;
-      box-shadow: 0 0 12px #22c55e;
-      margin-right: 10px;
-      vertical-align: middle;
-      animation: pulse 2s ease-in-out infinite;
+      width: 20px;
+      height: 2px;
+      background: rgba(255,255,255,0.2);
+      transition: background 0.3s;
     }
-    @keyframes pulse {
-      0%,100% { opacity: 1; } 50% { opacity: 0.5; }
-    }
-    .status {
-      font-family: 'SF Mono', Menlo, Consolas, monospace;
-      font-size: 0.75rem;
-      letter-spacing: 0.15em;
+    #indicator .bar span.active { background: #fff; }
+    /* Center logo mark — subtle, floating until content is added */
+    #mark {
+      position: fixed;
+      top: 2rem;
+      left: 2rem;
+      z-index: 20;
+      font-family: 'SF Mono', ui-monospace, monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.25em;
       text-transform: uppercase;
-      color: #8A94A3;
-      margin-bottom: 2rem;
+      color: rgba(255,255,255,0.6);
+      mix-blend-mode: difference;
     }
-    h1 {
-      font-size: clamp(2.5rem, 8vw, 4rem);
-      font-weight: 600;
-      letter-spacing: -0.03em;
-      line-height: 1.05;
-      margin-bottom: 1.5rem;
+    #hint {
+      position: fixed;
+      bottom: 4rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 20;
+      font-family: 'SF Mono', ui-monospace, monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+      animation: float 2.5s ease-in-out infinite;
+      mix-blend-mode: difference;
     }
-    h1 span { color: #8A94A3; font-weight: 400; }
-    h1 em { color: #00D4FF; font-style: normal; }
-    p {
-      font-size: 1.1rem;
-      color: #A7B0BE;
-      max-width: 520px;
-      margin-bottom: 2.5rem;
-    }
-    .links {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1rem;
-    }
-    .links a {
-      font-family: 'SF Mono', Menlo, Consolas, monospace;
-      font-size: 0.875rem;
-      color: #8A94A3;
-      text-decoration: none;
-      border-bottom: 1px solid transparent;
-      padding-bottom: 2px;
-      transition: color .2s, border-color .2s;
-    }
-    .links a:hover {
-      color: #00D4FF;
-      border-color: #00D4FF;
-    }
-    .links a.primary {
-      color: #E5E9F0;
-      border: 1px solid #E5E9F0;
-      padding: 0.6rem 1.2rem;
-      border-radius: 999px;
-      margin-right: 0.5rem;
-      transition: all .2s;
-    }
-    .links a.primary:hover {
-      background: #00D4FF;
-      border-color: #00D4FF;
-      color: #0B0D10;
-    }
-    footer {
-      margin-top: 4rem;
-      padding-top: 1.5rem;
-      border-top: 1px solid rgba(255,255,255,0.08);
-      font-size: 0.8rem;
-      color: #596272;
-      font-family: 'SF Mono', Menlo, Consolas, monospace;
-      display: flex;
-      justify-content: space-between;
+    @keyframes float {
+      0%,100% { transform: translateX(-50%) translateY(0); opacity: 0.35; }
+      50%     { transform: translateX(-50%) translateY(6px); opacity: 0.7; }
     }
   </style>
 </head>
 <body>
-  <main>
-    <div class="status"><span class="dot"></span>Available for work · Hatfield, UK</div>
-    <h1>Hammad Safi.<br/><span>AI &amp; software engineer</span> <em>.</em></h1>
-    <p>
-      MSc Advanced Computer Science at the University of Hertfordshire.
-      Building intelligent products across machine learning, full-stack web,
-      and mobile.
-    </p>
-    <div class="links">
-      <a class="primary" href="mailto:hammabdullah@gmail.com">Get in touch →</a>
-      <a href="https://github.com/HammadBullah" target="_blank" rel="noreferrer">GitHub</a>
-      <a href="https://www.linkedin.com/in/hammad-safi" target="_blank" rel="noreferrer">LinkedIn</a>
-      <a href="mailto:hammabdullah@gmail.com">Email</a>
-      <a href="tel:+447352664787">+44 7352 664787</a>
+  <canvas id="bg"></canvas>
+  <div class="overlay"></div>
+  <div class="grain"></div>
+
+  <div id="mark">HS · LOADING</div>
+  <div id="scroll-space"></div>
+
+  <div id="hint">Scroll ↓</div>
+  <div id="indicator">
+    <span id="scene-label">Scene 01</span>
+    <div class="bar">
+      <span data-idx="0"></span>
+      <span data-idx="1"></span>
+      <span data-idx="2"></span>
+      <span data-idx="3"></span>
+      <span data-idx="4"></span>
+      <span data-idx="5"></span>
     </div>
-    <footer>
-      <span>© 2025 Hammad Safi</span>
-      <span>Hatfield, UK</span>
-    </footer>
-  </main>
+  </div>
+
+  <script>
+  (() => {
+    const canvas = document.getElementById('bg');
+    const ctx = canvas.getContext('2d');
+    let w, h, dpr;
+    const sceneLabel = document.getElementById('scene-label');
+    const dots = document.querySelectorAll('#indicator .bar span');
+    const mark = document.getElementById('mark');
+
+    function resize() {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      w = window.innerWidth;
+      h = window.innerHeight;
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      canvas.style.width = w + 'px';
+      canvas.style.height = h + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    // Star field
+    const STAR_COUNT = 400;
+    const stars = Array.from({ length: STAR_COUNT }, () => ({
+      x: (Math.random() - 0.5) * 2000,
+      y: (Math.random() - 0.5) * 2000,
+      z: Math.random() * 1000,
+      pz: 0,
+      size: Math.random() * 1.5 + 0.3,
+      hue: Math.random() < 0.15 ? Math.random() * 60 + 180 : Math.random() * 40 + 200, // mostly blue/cyan, some orange
+    }));
+
+    // Nebula puffs (glowing blobs that drift)
+    const nebulas = [
+      { x: 0.2, y: 0.4, r: 0.6, hue: 200, hueVar: 20 }, // cyan-blue
+      { x: 0.8, y: 0.7, r: 0.5, hue: 270, hueVar: 30 }, // violet
+      { x: 0.5, y: 0.2, r: 0.4, hue: 25,  hueVar: 20 }, // orange
+    ];
+
+    // Particles that shoot past during high speed
+    const particles = [];
+
+    function addParticle() {
+      particles.push({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        vx: -(Math.random() * 8 + 4) - 2,
+        vy: (Math.random() - 0.5) * 2,
+        life: 1,
+        size: Math.random() * 2 + 1,
+        hue: Math.random() < 0.5 ? 190 : 270,
+      });
+    }
+
+    // "Scroll progress" 0..1 across the entire page
+    function getProgress() {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      return max <= 0 ? 0 : window.scrollY / max;
+    }
+
+    // Map progress (0..1) into scenes (0..5)
+    function getScene(p) {
+      return Math.min(5, Math.floor(p * 6));
+    }
+
+    // Interpolate between two colors
+    function lerp(a, b, t) { return a + (b - a) * t; }
+
+    // Palette per scene — deep space → nebula → sunburst → warp → grid → void
+    const palettes = [
+      { bg: [5, 8, 18],  accent: [0, 200, 255] },   // 0: deep space cyan
+      { bg: [10, 5, 25], accent: [138, 92, 255] },  // 1: violet nebula
+      { bg: [25, 10, 5], accent: [255, 122, 61] },  // 2: orange sun
+      { bg: [0, 0, 0],   accent: [255, 255, 255] }, // 3: warp / light speed
+      { bg: [3, 8, 15],  accent: [0, 212, 255] },   // 4: blue grid
+      { bg: [15, 5, 5],  accent: [255, 61, 187] },  // 5: magenta void
+    ];
+
+    function drawGrid(t, scene, progressInScene) {
+      if (scene < 4) return;
+      ctx.save();
+      ctx.strokeStyle = 'rgba(0, 212, 255, 0.15)';
+      ctx.lineWidth = 1;
+      const horizon = h * 0.55;
+      // Horizontal lines moving toward viewer
+      const offset = (t * 0.001 * 60) % 60;
+      for (let i = 0; i < 20; i++) {
+        const z = (i * 60 + offset) / 1200;
+        if (z <= 0) continue;
+        const y = horizon + (h - horizon) * z;
+        const fade = Math.max(0, 1 - z);
+        ctx.globalAlpha = fade * (scene === 4 ? progressInScene : scene > 4 ? (1 - progressInScene) : 0);
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(w, y);
+        ctx.stroke();
+      }
+      // Vertical converging lines
+      for (let i = -12; i <= 12; i++) {
+        ctx.globalAlpha = 0.3 * (scene === 4 ? progressInScene : scene > 4 ? (1 - progressInScene) : 0);
+        ctx.beginPath();
+        ctx.moveTo(w/2 + i * 40, horizon);
+        ctx.lineTo(w/2 + i * w * 0.1, h);
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    let lastTime = performance.now();
+    function frame(now) {
+      const dt = Math.min(50, now - lastTime);
+      lastTime = now;
+      const p = getProgress();
+      const scene = getScene(p);
+      const progressInScene = (p * 6) - scene; // 0..1 within scene
+
+      // Smoothly interpolate bg color between current and next palette
+      const cur = palettes[scene];
+      const next = palettes[Math.min(5, scene + 1)];
+      const br = lerp(cur.bg[0], next.bg[0], progressInScene);
+      const bg = lerp(cur.bg[1], next.bg[1], progressInScene);
+      const bb = lerp(cur.bg[2], next.bg[2], progressInScene);
+      ctx.fillStyle = `rgb(${br|0}, ${bg|0}, ${bb|0})`;
+      ctx.fillRect(0, 0, w, h);
+
+      // Accent color
+      const ar = lerp(cur.accent[0], next.accent[0], progressInScene)|0;
+      const ag = lerp(cur.accent[1], next.accent[1], progressInScene)|0;
+      const ab = lerp(cur.accent[2], next.accent[2], progressInScene)|0;
+
+      // Nebulas — big soft radial glows, positions drift with scroll
+      nebulas.forEach((n, i) => {
+        const shift = p * 0.5 + i * 0.3;
+        const x = (n.x + Math.sin(shift) * 0.1) * w;
+        const y = (n.y + Math.cos(shift * 1.3) * 0.08) * h;
+        const r = n.r * Math.min(w, h) * (1 + Math.sin(now * 0.0003 + i) * 0.05);
+        const grad = ctx.createRadialGradient(x, y, 0, x, y, r);
+        const intensity = 0.35 + 0.25 * Math.sin(now * 0.0005 + i);
+        const hue = n.hue + Math.sin(now * 0.0002 + i) * n.hueVar;
+        grad.addColorStop(0, `hsla(${hue}, 80%, 60%, ${intensity})`);
+        grad.addColorStop(0.5, `hsla(${hue}, 80%, 40%, ${intensity * 0.3})`);
+        grad.addColorStop(1, `hsla(${hue}, 80%, 20%, 0)`);
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, w, h);
+      });
+
+      // Starfield — warp speed in scene 3
+      const warp = scene === 3 ? progressInScene * 3 + 1 : (scene === 2 ? progressInScene * 0.6 : 0) + (scene === 4 ? progressInScene * 0.4 : 0);
+      ctx.save();
+      ctx.translate(w/2, h/2);
+      for (const s of stars) {
+        s.pz = s.z;
+        s.z -= warp * 10 + 0.3;
+        if (s.z < 1) {
+          s.x = (Math.random() - 0.5) * 2000;
+          s.y = (Math.random() - 0.5) * 2000;
+          s.z = 1000;
+          s.pz = s.z;
+        }
+        const sx = (s.x / s.z) * 400;
+        const sy = (s.y / s.z) * 400;
+        const px = (s.x / s.pz) * 400;
+        const py = (s.y / s.pz) * 400;
+        if (Math.abs(sx) > w/2 + 50 || Math.abs(sy) > h/2 + 50) continue;
+        const size = s.size * (1 - s.z/1000);
+        if (warp > 1.5) {
+          // streaks at warp
+          ctx.strokeStyle = `hsla(${s.hue}, 80%, 80%, ${(1 - s.z/1000) * 0.8})`;
+          ctx.lineWidth = size;
+          ctx.beginPath();
+          ctx.moveTo(px, py);
+          ctx.lineTo(sx, sy);
+          ctx.stroke();
+        } else {
+          ctx.fillStyle = `hsla(${s.hue}, 70%, 85%, ${(1 - s.z/1000) * 0.9})`;
+          ctx.beginPath();
+          ctx.arc(sx, sy, size, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+      ctx.restore();
+
+      // Grid (scene 4+)
+      drawGrid(now, scene, progressInScene);
+
+      // Shooting particles in warp / transition
+      if (scene === 3 || (scene === 2 && progressInScene > 0.5)) {
+        for (let i = 0; i < 3; i++) if (Math.random() < progressInScene * 0.5 + 0.3) addParticle();
+      }
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const pt = particles[i];
+        pt.x += pt.vx;
+        pt.y += pt.vy;
+        pt.life -= 0.01;
+        if (pt.life <= 0 || pt.x < -20) { particles.splice(i, 1); continue; }
+        ctx.strokeStyle = `hsla(${pt.hue}, 90%, 70%, ${pt.life})`;
+        ctx.lineWidth = pt.size;
+        ctx.beginPath();
+        ctx.moveTo(pt.x, pt.y);
+        ctx.lineTo(pt.x - pt.vx * 4, pt.y - pt.vy * 4);
+        ctx.stroke();
+      }
+
+      // Central sun / orb in scene 2
+      if (scene >= 1 && scene <= 3) {
+        const sunProgress = scene === 1 ? progressInScene
+                        : scene === 2 ? 1
+                        : 1 - progressInScene;
+        const cx = w/2, cy = h/2;
+        const r = Math.min(w, h) * 0.22 * sunProgress;
+        if (r > 1) {
+          const glow = ctx.createRadialGradient(cx, cy, 0, cx, cy, r * 3);
+          glow.addColorStop(0, `rgba(${ar},${ag},${ab}, ${0.9*sunProgress})`);
+          glow.addColorStop(0.2, `rgba(${ar},${ag},${ab}, ${0.3*sunProgress})`);
+          glow.addColorStop(1, 'rgba(0,0,0,0)');
+          ctx.fillStyle = glow;
+          ctx.fillRect(0, 0, w, h);
+          ctx.fillStyle = `rgba(${ar},${ag},${ab}, ${sunProgress})`;
+          ctx.beginPath();
+          ctx.arc(cx, cy, r * 0.5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      // Light beams sweep in scene 5
+      if (scene === 5) {
+        ctx.save();
+        ctx.translate(w/2, h);
+        for (let i = 0; i < 6; i++) {
+          const angle = (i / 6) * Math.PI * 2 + now * 0.0004 + p * 4;
+          const len = h * 1.2;
+          const grad = ctx.createLinearGradient(0, 0, Math.cos(angle) * len, Math.sin(angle) * len);
+          grad.addColorStop(0, `rgba(${ar},${ag},${ab},0.3)`);
+          grad.addColorStop(1, 'rgba(0,0,0,0)');
+          ctx.strokeStyle = grad;
+          ctx.lineWidth = 200;
+          ctx.beginPath();
+          ctx.moveTo(0, 0);
+          ctx.lineTo(Math.cos(angle) * len, Math.sin(angle) * len);
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
+
+      // Vignette
+      const vg = ctx.createRadialGradient(w/2, h/2, Math.min(w,h)*0.3, w/2, h/2, Math.max(w,h)*0.8);
+      vg.addColorStop(0, 'rgba(0,0,0,0)');
+      vg.addColorStop(1, 'rgba(0,0,0,0.7)');
+      ctx.fillStyle = vg;
+      ctx.fillRect(0,0,w,h);
+
+      // UI
+      sceneLabel.textContent = `Scene 0${scene + 1}`;
+      mark.textContent = `HS · ${(p*100).toFixed(0).padStart(2,'0')}%`;
+      dots.forEach(d => d.classList.toggle('active', Number(d.dataset.idx) === scene));
+
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  })();
+  </script>
 </body>
 </html>
