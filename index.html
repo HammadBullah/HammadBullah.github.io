@@ -263,19 +263,50 @@
       color: var(--gold);
     }
     .list { max-width: 640px; display: flex; flex-direction: column; gap: 0.2rem; margin-top: 1.5rem; }
-    .list .row {
-      display: grid; grid-template-columns: 160px 1fr; gap: 1rem; padding: 1rem 0;
-      border-bottom: 1px solid rgba(255,180,100,0.08); font-size: 0.9rem;
-      transition: padding 0.4s cubic-bezier(.2,.7,.2,1), background 0.4s ease;
+    /* Plain row (used by timeline / static items — third cell optional) */
+    .list .row,
+    .list a.proj {
+      display: grid;
+      grid-template-columns: 160px 1fr 28px;
+      gap: 1rem;
+      padding: 1rem 0;
+      font-size: 0.9rem;
+      border-bottom: 1px solid rgba(255,180,100,0.08);
+      align-items: start;
       border-radius: 4px;
+      text-decoration: none;
+      color: inherit;
+      transition: padding 0.4s cubic-bezier(.2,.7,.2,1), background 0.4s ease;
     }
-    .list .row:hover {
+    .list a.proj { cursor: none; }
+    .list a.proj:hover {
       padding-left: 0.8rem;
       background: linear-gradient(90deg, rgba(255,138,61,0.06), transparent);
     }
-    .list .row .y { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--ember); letter-spacing: 0.05em; padding-top: 0.15rem; }
-    .list .row .r { font-size: 1.05rem; font-weight: 600; margin-bottom: 0.1rem; color: #fff8f0; }
-    .list .row .d { color: var(--text-dim); font-size: 0.88rem; line-height: 1.55; }
+    .list .row .y,
+    .list a.proj .y { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--ember); letter-spacing: 0.05em; padding-top: 0.15rem; }
+    .list .row .r,
+    .list a.proj .r { font-size: 1.05rem; font-weight: 600; margin-bottom: 0.1rem; color: #fff8f0; transition: color 0.25s ease; }
+    .list a.proj:hover .r { color: var(--ember-bright); }
+    .list .row .d,
+    .list a.proj .d { color: var(--text-dim); font-size: 0.88rem; line-height: 1.55; }
+    /* When a row has no third cell, collapse that column */
+    .list .row.no-link { grid-template-columns: 160px 1fr; }
+    .gh-icon {
+      width: 28px; height: 28px;
+      display: inline-flex; align-items: center; justify-content: center;
+      border-radius: 50%;
+      color: var(--text-mute);
+      transition: color 0.25s ease, transform 0.25s ease, background 0.25s ease;
+      align-self: center;
+      justify-self: end;
+    }
+    .gh-icon svg { width: 18px; height: 18px; }
+    a.proj:hover .gh-icon {
+      color: var(--ember);
+      transform: translate(calc(var(--flow-x)*3px), calc(var(--flow-y)*3px));
+      background: rgba(255,138,61,0.1);
+    }
 
     /* Cursor — warm ember */
     * { cursor: none !important; }
@@ -364,7 +395,7 @@
   <div id="mark"><span class="dot"></span> HAMMAD SAFI · DEV</div>
   <div id="scene-label">01 / 06 · INTRO</div>
   <div id="hint">SCROLL ↓</div>
-  <div id="corner">v2.3 · HATFIELD, UK</div>
+  <div id="corner">v2.4 · HATFIELD, UK</div>
 
   <div class="screen active" data-idx="0">
     <div class="inner">
@@ -402,10 +433,46 @@
       <div class="tag">// 02 · selected work</div>
       <h1>Things I've <em>shipped</em>.</h1>
       <div class="list">
-        <div class="row"><div class="y">2024 · CV / RESEARCH</div><div><div class="r">Drowning Detection</div><div class="d">YOLOv9 + TensorFlow — 89% mAP@0.5 @ 32fps, sub-second alert latency.</div></div></div>
-        <div class="row"><div class="y">2023 · MOBILE</div><div><div class="r">PlucknPay</div><div class="d">Flutter + Firebase marketplace connecting farmers directly with consumers.</div></div></div>
-        <div class="row"><div class="y">2025 · MSc</div><div><div class="r">Weather LSTM</div><div class="d">Stacked LSTM time-series forecasting, benchmarked vs ARIMA / Prophet.</div></div></div>
-        <div class="row"><div class="y">2023 · IOT</div><div><div class="r">Smart Agriculture</div><div class="d">ESP32 sensors → Firebase → Flutter dashboard for farm monitoring.</div></div></div>
+        <a class="proj" href="https://github.com/HammadBullah?tab=repositories&q=drowning" target="_blank" rel="noreferrer" aria-label="Drowning Detection on GitHub">
+          <div class="y">2024 · CV / RESEARCH</div>
+          <div>
+            <div class="r">Drowning Detection</div>
+            <div class="d">YOLOv9 + TensorFlow — 89% mAP@0.5 @ 32fps, sub-second alert latency.</div>
+          </div>
+          <span class="gh-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.2c-3.3.7-4-1.4-4-1.4-.5-1.4-1.3-1.8-1.3-1.8-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.6.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.7 1.6.3 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.7-5.5 6 .4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3z"/></svg>
+          </span>
+        </a>
+        <a class="proj" href="https://github.com/HammadBullah/plucknpay" target="_blank" rel="noreferrer" aria-label="PlucknPay on GitHub">
+          <div class="y">2023 · MOBILE</div>
+          <div>
+            <div class="r">PlucknPay</div>
+            <div class="d">Flutter + Firebase marketplace connecting farmers directly with consumers.</div>
+          </div>
+          <span class="gh-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.2c-3.3.7-4-1.4-4-1.4-.5-1.4-1.3-1.8-1.3-1.8-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.6.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.7 1.6.3 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.7-5.5 6 .4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3z"/></svg>
+          </span>
+        </a>
+        <a class="proj" href="https://github.com/HammadBullah/Comparative-AI-Weather-Forecasting" target="_blank" rel="noreferrer" aria-label="Weather LSTM on GitHub">
+          <div class="y">2025 · MSc</div>
+          <div>
+            <div class="r">Weather LSTM</div>
+            <div class="d">Stacked LSTM time-series forecasting, benchmarked vs ARIMA / Prophet.</div>
+          </div>
+          <span class="gh-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.2c-3.3.7-4-1.4-4-1.4-.5-1.4-1.3-1.8-1.3-1.8-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.6.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.7 1.6.3 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.7-5.5 6 .4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3z"/></svg>
+          </span>
+        </a>
+        <a class="proj" href="https://github.com/HammadBullah?tab=repositories&q=agriculture" target="_blank" rel="noreferrer" aria-label="Smart Agriculture on GitHub">
+          <div class="y">2023 · IOT</div>
+          <div>
+            <div class="r">Smart Agriculture</div>
+            <div class="d">ESP32 sensors → Firebase → Flutter dashboard for farm monitoring.</div>
+          </div>
+          <span class="gh-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.2c-3.3.7-4-1.4-4-1.4-.5-1.4-1.3-1.8-1.3-1.8-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.6.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.7 1.6.3 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.7-5.5 6 .4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3z"/></svg>
+          </span>
+        </a>
       </div>
     </div>
   </div>
@@ -415,10 +482,10 @@
       <div class="tag">// 03 · chronicle</div>
       <h1>A short <em>timeline</em>.</h1>
       <div class="list">
-        <div class="row"><div class="y">2024 — NOW</div><div><div class="r">MSc Advanced Computer Science</div><div class="d">University of Hertfordshire · ML & distributed systems.</div></div></div>
-        <div class="row"><div class="y">2023 — 2024</div><div><div class="r">Freelance ML & Full-Stack Engineer</div><div class="d">Shipping Flutter apps, CV prototypes, internal tooling.</div></div></div>
-        <div class="row"><div class="y">2023</div><div><div class="r">Research — Drowning Detection</div><div class="d">Computer Vision Lab · YOLOv9 pipeline on edge hardware.</div></div></div>
-        <div class="row"><div class="y">2022 — 2023</div><div><div class="r">Mobile Engineer · PlucknPay</div><div class="d">Founding engineer, shipped end-to-end.</div></div></div>
+        <div class="row no-link"><div class="y">2024 — NOW</div><div><div class="r">MSc Advanced Computer Science</div><div class="d">University of Hertfordshire · ML & distributed systems.</div></div></div>
+        <div class="row no-link"><div class="y">2023 — 2024</div><div><div class="r">Freelance ML & Full-Stack Engineer</div><div class="d">Shipping Flutter apps, CV prototypes, internal tooling.</div></div></div>
+        <div class="row no-link"><div class="y">2023</div><div><div class="r">Research — Drowning Detection</div><div class="d">Computer Vision Lab · YOLOv9 pipeline on edge hardware.</div></div></div>
+        <div class="row no-link"><div class="y">2022 — 2023</div><div><div class="r">Mobile Engineer · PlucknPay</div><div class="d">Founding engineer, shipped end-to-end.</div></div></div>
       </div>
     </div>
   </div>
