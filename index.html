@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Hammad Safi" />
-  <meta name="theme-color" content="#fafafa" />
-  <title>Hammad Safi — Software Engineer</title>
+  <meta name="description" content="Hammad Safi — AI & Software Engineer" />
+  <meta name="theme-color" content="#05080c" />
+  <title>Hammad Safi — AI & Software Engineer</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,403 +14,535 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: auto; }
     body {
-      background: #fafaf9;
-      color: #0f172a;
+      background: #05080c;
+      color: #e6edf3;
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
       overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
     }
-    #bg-canvas {
-      position: fixed;
-      inset: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: 0;
-      display: block;
+    /* ---------- Background video stack ---------- */
+    #bg-video-wrap {
+      position: fixed; inset: 0; width: 100vw; height: 100vh;
+      z-index: 0; overflow: hidden;
+      background:
+        radial-gradient(ellipse at 35% 25%, #0a2540 0%, #05080c 55%, #000 100%);
     }
-    /* Light subtle grain */
+    /* Fallback animated gradient in case video doesn't load */
+    #bg-fallback {
+      position: absolute; inset: -20%; z-index: 0;
+      background:
+        radial-gradient(600px circle at 20% 30%, rgba(0,180,255,0.18), transparent 60%),
+        radial-gradient(500px circle at 80% 70%, rgba(138,92,255,0.18), transparent 60%),
+        radial-gradient(400px circle at 60% 20%, rgba(255,122,61,0.08), transparent 60%),
+        linear-gradient(135deg, #05080c, #0a0f1a 60%, #05080c);
+      animation: bgshift 18s ease-in-out infinite alternate;
+      filter: blur(2px);
+    }
+    @keyframes bgshift {
+      0%   { transform: translate3d(0,0,0) scale(1); }
+      100% { transform: translate3d(-2%, -1%, 0) scale(1.05); }
+    }
+    #bg-video {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 1.2s ease;
+      will-change: transform, opacity;
+      filter: saturate(1.15) contrast(1.08) brightness(0.85);
+    }
+    #bg-video.on { opacity: 0.65; }
+    /* Color grade — cyan/violet wash + vignette */
+    #grade {
+      position: fixed; inset: 0; z-index: 1; pointer-events: none;
+      background:
+        radial-gradient(ellipse at 30% 20%, rgba(0,180,255,0.10), transparent 55%),
+        radial-gradient(ellipse at 70% 80%, rgba(138,92,255,0.10), transparent 55%),
+        radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.65) 100%);
+    }
+    #dim {
+      position: fixed; inset: 0; z-index: 1; pointer-events: none;
+      background: linear-gradient(180deg, rgba(5,8,12,0.35) 0%, rgba(5,8,12,0.55) 100%);
+    }
     .grain {
-      position: fixed; inset: 0; z-index: 1; pointer-events: none; opacity: 0.03;
-      mix-blend-mode: multiply;
-      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+      position: fixed; inset: 0; z-index: 3; pointer-events: none; opacity: 0.06;
+      mix-blend-mode: overlay;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
     }
-    /* Soft vignette for light mode */
-    .vignette {
-      position: fixed; inset: 0; z-index: 2; pointer-events: none;
-      background: radial-gradient(ellipse at center, transparent 60%, rgba(250,250,249,0.5) 100%);
+    .scan {
+      position: fixed; inset: 0; z-index: 3; pointer-events: none; opacity: 0.12;
+      background: repeating-linear-gradient(0deg, rgba(255,255,255,0.03) 0, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 3px);
     }
-    #scroll-space { position: relative; z-index: 10; height: 600vh; width: 100%; }
+    #fx { position: fixed; inset: 0; z-index: 2; pointer-events: none; }
+
+    /* ---------- Scroll space (6 scenes) ---------- */
+    #scroll-space { position: relative; z-index: 10; height: 800vh; width: 100%; }
+
+    /* ---------- HUD ---------- */
     #mark {
       position: fixed; top: 2rem; left: 2rem; z-index: 20;
-      font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.75rem;
-      letter-spacing: 0.15em; text-transform: uppercase; color: #475569;
-      display: flex; align-items: center; gap: 0.6rem;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.72rem;
+      letter-spacing: 0.18em; text-transform: uppercase; color: rgba(230,237,243,0.75);
+      display: flex; align-items: center; gap: 0.6rem; mix-blend-mode: screen;
     }
     #mark .dot {
       width: 8px; height: 8px; border-radius: 50%;
-      background: #10b981; box-shadow: 0 0 10px #10b981;
+      background: #00d4ff; box-shadow: 0 0 12px #00d4ff;
       animation: pulse 2s ease-in-out infinite;
     }
     @keyframes pulse {
-      0%,100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.6; transform: scale(0.9); }
+      0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.85); }
     }
     #progress {
       position: fixed; top: 0; left: 0; height: 2px; width: 0%;
-      background: linear-gradient(90deg, #0891b2, #4f46e5, #d97706);
-      z-index: 20;
+      background: linear-gradient(90deg, #00d4ff, #8a5cff, #ff7a3d);
+      z-index: 20; box-shadow: 0 0 12px rgba(0,212,255,0.6);
+    }
+    #scene-label {
+      position: fixed; bottom: 2rem; left: 2rem; z-index: 20;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.7rem;
+      letter-spacing: 0.2em; text-transform: uppercase; color: rgba(230,237,243,0.6); mix-blend-mode: screen;
     }
     #hint {
-      position: fixed; bottom: 2.5rem; left: 50%; transform: translateX(-50%); z-index: 20;
-      font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.7rem;
-      letter-spacing: 0.2em; text-transform: uppercase; color: #64748b;
-      animation: float 2.5s ease-in-out infinite;
+      position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%); z-index: 20;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.65rem;
+      letter-spacing: 0.3em; text-transform: uppercase; color: rgba(230,237,243,0.5);
+      animation: float 2.5s ease-in-out infinite; mix-blend-mode: screen;
     }
     @keyframes float {
-      0%,100% { transform: translateX(-50%) translateY(0); opacity: 0.7; }
-      50%     { transform: translateX(-50%) translateY(6px); opacity: 1; }
+      0%,100% { transform: translateX(-50%) translateY(0); opacity: 0.55; }
+      50%     { transform: translateX(-50%) translateY(6px); opacity: 0.95; }
     }
     #corner {
       position: fixed; bottom: 2rem; right: 2rem; z-index: 20;
-      font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.65rem;
-      letter-spacing: 0.15em; text-transform: uppercase; color: #94a3b8;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.65rem;
+      letter-spacing: 0.15em; text-transform: uppercase; color: rgba(230,237,243,0.5); mix-blend-mode: screen;
     }
-    /* Hero intro content - light, elegant, dev-themed */
-    #hero {
+
+    /* ---------- Scene content ---------- */
+    .screen {
       position: fixed;
       inset: 0;
       z-index: 15;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
       padding: 2rem;
+      opacity: 0;
+      transition: opacity 0.8s ease, transform 1s cubic-bezier(.16,1,.3,1);
+      transform: translateY(30px);
       pointer-events: none;
-      opacity: 1;
-      transition: opacity 0.6s ease;
     }
-    #hero .tag {
+    .screen.active { opacity: 1; transform: translateY(0); pointer-events: auto; }
+    .screen .inner { max-width: 900px; width: 100%; }
+    .screen .tag {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.75rem;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: #0891b2;
-      margin-bottom: 1.5rem;
+      font-size: 0.75rem; letter-spacing: 0.25em; text-transform: uppercase;
+      color: #00d4ff; margin-bottom: 1.5rem;
+      text-shadow: 0 0 20px rgba(0,212,255,0.5);
     }
-    #hero h1 {
-      font-size: clamp(3rem, 9vw, 7rem);
-      font-weight: 600;
-      letter-spacing: -0.04em;
-      line-height: 1;
-      text-align: center;
-      color: #0f172a;
-      margin-bottom: 1rem;
+    .screen h1 {
+      font-size: clamp(2.8rem, 8vw, 6rem);
+      font-weight: 600; letter-spacing: -0.04em; line-height: 1;
+      margin-bottom: 1.25rem;
+      text-shadow: 0 4px 40px rgba(0,0,0,0.7);
     }
-    #hero h1 span {
-      font-style: italic;
-      font-weight: 400;
-      color: #4f46e5;
-      font-family: 'Instrument Serif', Georgia, serif;
+    .screen h1 em { font-style: italic; font-weight: 400; color: #8a5cff; font-family: Georgia, serif; }
+    .screen h1 .accent { color: #00d4ff; }
+    .screen p {
+      font-size: clamp(1rem, 1.5vw, 1.2rem);
+      color: rgba(230,237,243,0.82);
+      line-height: 1.6; max-width: 600px; margin-bottom: 2rem;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.5);
     }
-    #hero p {
-      max-width: 520px;
-      text-align: center;
-      color: #475569;
-      font-size: 1.1rem;
-      line-height: 1.6;
-      margin-bottom: 2rem;
-    }
-    #hero .btn {
-      pointer-events: auto;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.8rem 1.5rem;
-      background: #0f172a;
-      color: white;
-      border-radius: 999px;
-      font-size: 0.9rem;
-      font-weight: 500;
-      text-decoration: none;
-      transition: all 0.2s ease;
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.85rem 1.6rem;
+      background: #00d4ff; color: #04111b;
+      border-radius: 999px; font-size: 0.9rem; font-weight: 600;
+      text-decoration: none; transition: all 0.25s ease;
       font-family: 'Inter', sans-serif;
+      box-shadow: 0 0 30px rgba(0,212,255,0.4);
     }
-    #hero .btn:hover {
-      background: #4f46e5;
-      transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(79,70,229,0.25);
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 40px rgba(0,212,255,0.6); }
+    .btn.ghost {
+      background: transparent; color: #e6edf3;
+      border: 1px solid rgba(230,237,243,0.25);
+      box-shadow: none;
     }
-    /* Fade out hero as user scrolls */
-    #hero.fade { opacity: 0; transform: translateY(-20px); }
-    #hero { transition: opacity 0.8s ease, transform 0.8s ease; }
+    .btn.ghost:hover { background: rgba(255,255,255,0.05); border-color: #00d4ff; color: #00d4ff; }
+    .actions { display: flex; gap: 0.8rem; flex-wrap: wrap; }
+
+    .facts {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 1rem; margin-top: 2rem; max-width: 700px;
+    }
+    .fact {
+      padding: 0.9rem 1rem; border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px; background: rgba(8,12,18,0.55); backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    .fact .k { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: #00d4ff; opacity: 0.8; margin-bottom: 0.3rem; }
+    .fact .v { font-size: 0.9rem; color: #e6edf3; }
+
+    .chips { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.5rem; max-width: 700px; }
+    .chip {
+      padding: 0.5rem 0.9rem; border-radius: 8px;
+      border: 1px solid rgba(0,212,255,0.25); background: rgba(0,212,255,0.06);
+      font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: #c5f3ff;
+    }
+    .list { max-width: 620px; display: flex; flex-direction: column; gap: 0.2rem; margin-top: 1.5rem; }
+    .list .row {
+      display: grid; grid-template-columns: 160px 1fr; gap: 1rem; padding: 0.9rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.07); font-size: 0.9rem;
+    }
+    .list .row .y { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: #8a5cff; letter-spacing: 0.05em; padding-top: 0.15rem; }
+    .list .row .r { font-size: 1rem; font-weight: 500; margin-bottom: 0.1rem; color: #fff; }
+    .list .row .d { color: rgba(230,237,243,0.7); font-size: 0.85rem; line-height: 1.5; }
+
+    /* Cursor */
+    * { cursor: none !important; }
+    #cur-dot, #cur-ring {
+      position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9999;
+      transform: translate(-50%,-50%); border-radius: 50%;
+      will-change: transform;
+      mix-blend-mode: screen;
+    }
+    #cur-dot { width: 6px; height: 6px; background: #00d4ff; box-shadow: 0 0 10px #00d4ff; }
+    #cur-ring {
+      width: 32px; height: 32px; border: 1.5px solid rgba(0,212,255,0.7);
+      transition: width .18s, height .18s, background .2s;
+    }
+    #cur-ring.hover { width: 52px; height: 52px; background: rgba(0,212,255,0.08); }
+
+    @media (max-width: 640px) {
+      .list .row { grid-template-columns: 1fr; gap: 0.2rem; }
+      #mark, #corner, #scene-label, #hint { font-size: 0.6rem; }
+      #mark, #corner, #scene-label { padding: 0 0.5rem; }
+      /* Hide custom cursor on touch devices */
+      #cur-dot, #cur-ring { display: none; }
+      * { cursor: auto !important; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+    }
   </style>
 </head>
 <body>
-  <canvas id="bg-canvas"></canvas>
+  <div id="bg-video-wrap">
+    <div id="bg-fallback"></div>
+    <video id="bg-video"
+           muted
+           playsinline
+           webkit-playsinline
+           preload="auto"
+           disablepictureinpicture
+           disableremoteplayback
+           x5-playsinline
+           aria-hidden="true">
+      <source src="/bg.mp4" type="video/mp4">
+    </video>
+  </div>
+  <div id="dim"></div>
+  <div id="grade"></div>
+  <canvas id="fx"></canvas>
+  <div class="scan"></div>
   <div class="grain"></div>
-  <div class="vignette"></div>
+
+  <div id="cur-dot"></div>
+  <div id="cur-ring"></div>
 
   <div id="progress"></div>
-  <div id="mark"><span class="dot"></span> Hammad Safi · Software Engineer</div>
+  <div id="mark"><span class="dot"></span> HAMMAD SAFI · DEV</div>
+  <div id="scene-label">01 / 06 · INTRO</div>
+  <div id="hint">SCROLL ↓</div>
+  <div id="corner">v2.1 · HATFIELD, UK</div>
 
-  <div id="hero">
-    <div class="tag">// hello_world.exe</div>
-    <h1>Hammad Safi <span>builds</span><br/>thoughtful software.</h1>
-    <p>AI & software engineer. MSc Computer Science at Hertfordshire. Building intelligent systems at the intersection of ML, web, and mobile.</p>
-    <a href="mailto:hammabdullah@gmail.com" class="btn">Get in touch →</a>
+  <div class="screen active" data-idx="0">
+    <div class="inner">
+      <div class="tag">// hello_world.exe</div>
+      <h1>Hammad <em>Safi</em>.</h1>
+      <p>AI & software engineer. MSc Computer Science at Hertfordshire. Building intelligent products where machine learning meets real users.</p>
+      <div class="actions">
+        <a href="mailto:hammabdullah@gmail.com" class="btn">Get in touch →</a>
+        <a href="#work" class="btn ghost">View projects</a>
+      </div>
+      <div class="facts">
+        <div class="fact"><div class="k">Status</div><div class="v">Available for roles</div></div>
+        <div class="fact"><div class="k">Focus</div><div class="v">ML · Web · Mobile</div></div>
+        <div class="fact"><div class="k">Location</div><div class="v">Hatfield, UK</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen" data-idx="1">
+    <div class="inner">
+      <div class="tag">// 01 · about</div>
+      <h1>I write <em class="accent">code</em> that <em>thinks</em>.</h1>
+      <p>Computer vision systems that see, mobile apps people open daily, backend infrastructure that quietly holds it together. I care about model accuracy, clean pipelines, latency, and the weight of a typeface.</p>
+      <div class="chips">
+        <span class="chip">Python</span><span class="chip">TensorFlow</span><span class="chip">PyTorch</span>
+        <span class="chip">TypeScript</span><span class="chip">React</span><span class="chip">Flutter</span>
+        <span class="chip">Node.js</span><span class="chip">FastAPI</span><span class="chip">Docker</span>
+        <span class="chip">AWS</span><span class="chip">Firebase</span><span class="chip">PostgreSQL</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen" data-idx="2" id="work">
+    <div class="inner">
+      <div class="tag">// 02 · selected work</div>
+      <h1>Things I've <em>shipped</em>.</h1>
+      <div class="list">
+        <div class="row"><div class="y">2024 · CV / RESEARCH</div><div><div class="r">Drowning Detection</div><div class="d">YOLOv9 + TensorFlow — 89% mAP@0.5 @ 32fps, sub-second alert latency.</div></div></div>
+        <div class="row"><div class="y">2023 · MOBILE</div><div><div class="r">PlucknPay</div><div class="d">Flutter + Firebase marketplace connecting farmers directly with consumers.</div></div></div>
+        <div class="row"><div class="y">2025 · MSc</div><div><div class="r">Weather LSTM</div><div class="d">Stacked LSTM time-series forecasting, benchmarked vs ARIMA / Prophet.</div></div></div>
+        <div class="row"><div class="y">2023 · IOT</div><div><div class="r">Smart Agriculture</div><div class="d">ESP32 sensors → Firebase → Flutter dashboard for farm monitoring.</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen" data-idx="3">
+    <div class="inner">
+      <div class="tag">// 03 · chronicle</div>
+      <h1>A short <em>timeline</em>.</h1>
+      <div class="list">
+        <div class="row"><div class="y">2024 — NOW</div><div><div class="r">MSc Advanced Computer Science</div><div class="d">University of Hertfordshire · ML & distributed systems.</div></div></div>
+        <div class="row"><div class="y">2023 — 2024</div><div><div class="r">Freelance ML & Full-Stack Engineer</div><div class="d">Shipping Flutter apps, CV prototypes, internal tooling.</div></div></div>
+        <div class="row"><div class="y">2023</div><div><div class="r">Research — Drowning Detection</div><div class="d">Computer Vision Lab · YOLOv9 pipeline on edge hardware.</div></div></div>
+        <div class="row"><div class="y">2022 — 2023</div><div><div class="r">Mobile Engineer · PlucknPay</div><div class="d">Founding engineer, shipped end-to-end.</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen" data-idx="4">
+    <div class="inner">
+      <div class="tag">// 04 · transmit</div>
+      <h1>Let's build <em class="accent">something</em>.</h1>
+      <p>Open to full-time roles, research collaborations, and a small number of freelance engagements. Best reached by email.</p>
+      <div class="actions">
+        <a href="mailto:hammabdullah@gmail.com" class="btn">hammabdullah@gmail.com →</a>
+        <a href="https://github.com/HammadBullah" target="_blank" rel="noreferrer" class="btn ghost">GitHub</a>
+        <a href="https://www.linkedin.com/in/hammad-safi" target="_blank" rel="noreferrer" class="btn ghost">LinkedIn</a>
+      </div>
+      <div class="facts">
+        <div class="fact"><div class="k">Email</div><div class="v" style="font-size:0.82rem">hammabdullah@gmail.com</div></div>
+        <div class="fact"><div class="k">Phone</div><div class="v">+44 7352 664787</div></div>
+        <div class="fact"><div class="k">GitHub</div><div class="v">@HammadBullah</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="screen" data-idx="5">
+    <div class="inner" style="text-align: center; display:flex; flex-direction:column; align-items:center;">
+      <div class="tag" style="text-align:center;">// end_of_transmission</div>
+      <h1 style="text-align:center;">Session <em>ended</em>.</h1>
+      <p style="text-align:center; margin-left:auto; margin-right:auto;">
+        Press space to restart · scroll back up to review · press R to reload.
+      </p>
+    </div>
   </div>
 
   <div id="scroll-space"></div>
-  <div id="hint">Scroll ↓</div>
-  <div id="corner">v1.0 · Hatfield, UK</div>
 
   <script>
   (() => {
-    const canvas = document.getElementById('bg-canvas');
-    const ctx = canvas.getContext('2d');
-    const hero = document.getElementById('hero');
-    const progressBar = document.getElementById('progress');
-    let w, h, dpr;
+    const video = document.getElementById('bg-video');
+    const progress = document.getElementById('progress');
+    const sceneLabel = document.getElementById('scene-label');
+    const screens = document.querySelectorAll('.screen');
+    const dot = document.getElementById('cur-dot');
+    const ring = document.getElementById('cur-ring');
+    const fx = document.getElementById('fx');
+    const fxCtx = fx.getContext('2d');
 
-    // Light-mode palette (dev-themed)
-    const COLORS = {
-      cyan: '#0891b2',
-      indigo: '#4f46e5',
-      amber: '#d97706',
-      emerald: '#059669',
-      rose: '#e11d48',
-      grid: 'rgba(15,23,42,0.04)',
-      line: 'rgba(15,23,42,0.12)',
-      node: 'rgba(15,23,42,0.5)',
-      text: 'rgba(15,23,42,0.18)',
-    };
+    const SCENE_COUNT = 6;
+    const SCENE_NAMES = ['INTRO','ABOUT','WORK','CHRONICLE','TRANSMIT','END'];
 
-    // Developer symbols floating around
-    const SYMBOLS = [
-      '{', '}', '()', '=>', '//', '&&', '||', ';',
-      'const', 'let', 'fn', 'import', 'export', 'return',
-      '0', '1', 'true', 'false', '<>', '/>', '===',
-      'async', 'await', 'git', 'push', '#!', '/*', '*/',
-      'null', 'undefined', 'map', 'filter', 'reduce',
-    ];
+    // ----- Video setup: we want scroll-scrub, NOT autoplay playback.
+    // Strategy: wait for metadata, force-pause, then drive currentTime from scroll.
+    // We do call .play() once and immediately pause to unlock iOS media playback.
+    let videoReady = false;
+    let videoDuration = 0;
+    let seeking = false;
 
-    function resize() {
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
-      w = window.innerWidth;
-      h = window.innerHeight;
-      canvas.width = w * dpr;
-      canvas.height = h * dpr;
-      canvas.style.width = w + 'px';
-      canvas.style.height = h + 'px';
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    }
-    resize();
-    window.addEventListener('resize', resize);
-
-    // Layer 1: Soft isometric grid that tilts with scroll
-    function drawGrid(scrollVel, scrollP) {
-      ctx.save();
-      ctx.strokeStyle = COLORS.grid;
-      ctx.lineWidth = 1;
-      const gridSize = 50;
-      const offset = (window.scrollY * 0.3) % gridSize;
-      // Perspective effect: grid recedes to horizon based on scroll
-      const horizonY = h * (0.45 + Math.sin(scrollP * Math.PI) * 0.1);
-      const tilt = scrollVel * 2;
-      // Vertical lines
-      for (let x = -w; x < w * 2; x += gridSize) {
-        ctx.beginPath();
-        ctx.moveTo(x + offset - tilt * 10, h);
-        ctx.lineTo(w/2 + (x - w/2) * 0.3, horizonY);
-        ctx.stroke();
-      }
-      // Horizontal lines
-      for (let y = horizonY; y < h; y += gridSize * 0.5) {
-        const dist = (y - horizonY) / (h - horizonY);
-        const width = w * dist + w * 0.3;
-        ctx.beginPath();
-        ctx.moveTo(w/2 - width/2 + offset * dist, y);
-        ctx.lineTo(w/2 + width/2 + offset * dist, y);
-        ctx.stroke();
-      }
-      ctx.restore();
+    function showVideo() {
+      if (video.classList.contains('on')) return;
+      video.classList.add('on');
     }
 
-    // Layer 2: Floating code symbols (parallax, speed tied to scroll velocity)
-    const symbols = Array.from({ length: 45 }, () => ({
-      x: Math.random() * w,
-      y: Math.random() * h,
-      text: SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)],
-      size: 10 + Math.random() * 16,
-      vx: (Math.random() - 0.5) * 0.2,
-      vy: -Math.random() * 0.3 - 0.1,
-      alpha: 0.08 + Math.random() * 0.2,
-      color: [COLORS.cyan, COLORS.indigo, COLORS.amber, COLORS.emerald, COLORS.rose][Math.floor(Math.random()*5)],
-      rotation: (Math.random() - 0.5) * 0.5,
-      depth: Math.random(),
-    }));
-
-    function drawSymbols(scrollVel, scrollP) {
-      ctx.save();
-      ctx.font = (size => `500 ${size}px 'JetBrains Mono', monospace`);
-      for (const s of symbols) {
-        // Scroll affects fall speed - deeper scroll = faster symbols rise
-        s.y += s.vy - scrollVel * (0.5 + s.depth);
-        s.x += s.vx + Math.sin(s.y * 0.01 + s.depth * 10) * 0.2;
-        if (s.y < -50) { s.y = h + 50; s.x = Math.random() * w; }
-        if (s.y > h + 50) { s.y = -50; s.x = Math.random() * w; }
-        if (s.x < -100) s.x = w + 50;
-        if (s.x > w + 100) s.x = -50;
-        ctx.save();
-        ctx.translate(s.x, s.y);
-        ctx.rotate(s.rotation);
-        ctx.globalAlpha = s.alpha + Math.sin(scrollP * Math.PI * 2 + s.depth * 10) * 0.05;
-        ctx.fillStyle = s.color;
-        ctx.font = `${s.size}px 'JetBrains Mono', monospace`;
-        ctx.fillText(s.text, 0, 0);
-        ctx.restore();
-      }
-      ctx.restore();
-    }
-
-    // Layer 3: Connection node network (graph-like, nodes connect when close)
-    const nodes = Array.from({ length: 35 }, () => ({
-      x: Math.random() * w,
-      y: Math.random() * h,
-      vx: (Math.random() - 0.5) * 0.4,
-      vy: (Math.random() - 0.5) * 0.4,
-      r: 1.5 + Math.random() * 2,
-      alpha: 0.3 + Math.random() * 0.5,
-    }));
-
-    function drawNodes(scrollVel) {
-      // Movement speed scales with scroll velocity
-      const speed = 1 + Math.abs(scrollVel) * 5;
-      // Update positions
-      for (const n of nodes) {
-        n.x += n.vx * speed;
-        n.y += n.vy * speed;
-        if (n.x < 0 || n.x > w) n.vx *= -1;
-        if (n.y < 0 || n.y > h) n.vy *= -1;
-      }
-      // Draw connections
-      ctx.save();
-      ctx.lineWidth = 1;
-      for (let i = 0; i < nodes.length; i++) {
-        for (let j = i + 1; j < nodes.length; j++) {
-          const a = nodes[i], b = nodes[j];
-          const dx = a.x - b.x, dy = a.y - b.y;
-          const d = Math.sqrt(dx*dx + dy*dy);
-          if (d < 140) {
-            const alpha = (1 - d / 140) * 0.25;
-            const grad = ctx.createLinearGradient(a.x, a.y, b.x, b.y);
-            grad.addColorStop(0, `rgba(8,145,178,${alpha})`);
-            grad.addColorStop(1, `rgba(79,70,229,${alpha})`);
-            ctx.strokeStyle = grad;
-            ctx.beginPath();
-            ctx.moveTo(a.x, a.y);
-            ctx.lineTo(b.x, b.y);
-            ctx.stroke();
-          }
-        }
-      }
-      // Draw nodes
-      for (const n of nodes) {
-        ctx.fillStyle = `rgba(15,23,42,${n.alpha * 0.7})`;
-        ctx.beginPath();
-        ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
-        ctx.fill();
-        // Glow for some
-        if (Math.random() < 0.02) {
-          ctx.fillStyle = 'rgba(8,145,178,0.4)';
-          ctx.beginPath();
-          ctx.arc(n.x, n.y, n.r * 3, 0, Math.PI * 2);
-          ctx.fill();
-        }
-      }
-      ctx.restore();
-    }
-
-    // Layer 4: Code rain in the background (faint, like terminal rain)
-    const rainCols = Math.floor(w / 22);
-    const rain = Array.from({ length: 80 }, () => ({
-      x: Math.random() * w,
-      y: Math.random() * h,
-      speed: 0.5 + Math.random() * 1.5,
-      length: 5 + Math.floor(Math.random() * 15),
-      chars: Array.from({ length: 20 }, () => Math.random() < 0.5 ? '0' : '1').join(''),
-    }));
-
-    function drawRain(scrollVel) {
-      ctx.save();
-      ctx.font = '12px JetBrains Mono, monospace';
-      ctx.fillStyle = 'rgba(8,145,178,0.07)';
-      for (const c of rain) {
-        c.y += c.speed * (1 + Math.abs(scrollVel) * 8);
-        if (c.y > h + 100) { c.y = -100; c.x = Math.random() * w; }
-        for (let i = 0; i < c.length; i++) {
-          const ch = Math.random() < 0.1 ? String.fromCharCode(48 + Math.floor(Math.random()*2)) : ' ';
-          ctx.fillText(ch || '0', c.x, c.y - i * 14);
-        }
-      }
-      ctx.restore();
-    }
-
-    // Layer 5: Large soft light blobs that drift with scroll
-    const blobs = [
-      { x: 0.2, y: 0.3, r: 400, color: 'rgba(8,145,178,0.08)',  vx: 0.0001 },
-      { x: 0.8, y: 0.7, r: 500, color: 'rgba(79,70,229,0.08)', vx: -0.0001 },
-      { x: 0.5, y: 0.1, r: 350, color: 'rgba(217,119,6,0.06)',  vx: 0.00005 },
-    ];
-    function drawBlobs(scrollP) {
-      for (const b of blobs) {
-        const px = (b.x + Math.sin(scrollP * Math.PI * 2) * 0.05) * w;
-        const py = (b.y + Math.cos(scrollP * Math.PI * 2) * 0.05) * h;
-        const grad = ctx.createRadialGradient(px, py, 0, px, py, b.r);
-        grad.addColorStop(0, b.color);
-        grad.addColorStop(1, 'rgba(0,0,0,0)');
-        ctx.fillStyle = grad;
-        ctx.fillRect(0, 0, w, h);
+    function tryUnlockAndReady() {
+      // Attempt play to unlock media; immediately pause — puts video in "scrubbable" state.
+      const p = video.play();
+      if (p && typeof p.then === 'function') {
+        p.then(() => {
+          video.pause();
+          videoReady = true;
+          showVideo();
+        }).catch(() => {
+          // Autoplay blocked — video is still usable, will show once user interacts.
+          video.pause();
+        });
+      } else {
+        video.pause();
+        videoReady = true;
+        showVideo();
       }
     }
 
-    // Scroll tracking
-    let lastScrollY = window.scrollY;
-    let scrollVel = 0;
-    function getProgress() {
-      const max = document.documentElement.scrollHeight - window.innerHeight;
-      return max <= 0 ? 0 : window.scrollY / max;
+    function onMeta() {
+      videoDuration = isFinite(video.duration) ? video.duration : 10;
+      if (videoDuration > 0.5) {
+        videoReady = true;
+        tryUnlockAndReady();
+      }
+    }
+    function onData() {
+      showVideo();
+      tryUnlockAndReady();
     }
 
-    function frame() {
-      ctx.clearRect(0, 0, w, h);
-
-      const p = getProgress();
-      const dy = window.scrollY - lastScrollY;
-      scrollVel = scrollVel * 0.9 + dy * 0.001;
-      lastScrollY = window.scrollY;
-
-      // Hero fade out
-      if (p > 0.08) hero.classList.add('fade');
-      else hero.classList.remove('fade');
-
-      progressBar.style.width = (p * 100) + '%';
-
-      // Draw layers (back to front)
-      drawBlobs(p);
-      drawGrid(scrollVel, p);
-      drawRain(scrollVel);
-      drawNodes(scrollVel);
-      drawSymbols(scrollVel, p);
-
-      requestAnimationFrame(frame);
-    }
-    requestAnimationFrame(frame);
-
-    // Smooth anchor scroll
-    document.querySelector('a.btn')?.addEventListener('click', e => {
-      e.preventDefault();
-      window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' });
+    video.addEventListener('loadedmetadata', onMeta, { once: true });
+    video.addEventListener('loadeddata', onData, { once: true });
+    video.addEventListener('canplay', () => showVideo(), { once: true });
+    video.addEventListener('playing', () => {
+      // If it starts playing (e.g. on user gesture), pause it — we are a scrubbed background.
+      if (videoReady) video.pause();
     });
+    video.addEventListener('error', (e) => {
+      console.warn('bg video failed to load, showing fallback', e);
+      // Keep #bg-fallback visible (default), video stays opacity:0
+    });
+
+    // First-interaction unlock for iOS (autoplay can require a gesture)
+    const unlock = () => {
+      if (!videoReady) tryUnlockAndReady();
+      window.removeEventListener('pointerdown', unlock);
+      window.removeEventListener('keydown', unlock);
+      window.removeEventListener('touchstart', unlock);
+      window.removeEventListener('wheel', unlock);
+    };
+    window.addEventListener('pointerdown', unlock, { passive: true });
+    window.addEventListener('touchstart', unlock, { passive: true });
+    window.addEventListener('keydown', unlock);
+    window.addEventListener('wheel', unlock, { passive: true });
+
+    // Kick off load
+    try { video.load(); } catch(e){}
+
+    // ----- Scroll progress / scrub -----
+    function scrollP() {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      return max <= 0 ? 0 : Math.max(0, Math.min(1, window.scrollY / max));
+    }
+    function sceneIndex() {
+      return Math.min(SCENE_COUNT - 1, Math.floor(scrollP() * SCENE_COUNT));
+    }
+
+    // Throttled seek — only seek when the seeked event fires back, avoids flooding
+    let lastTargetTime = -1;
+    video.addEventListener('seeked', () => { seeking = false; applyVideoTime(); });
+
+    function applyVideoTime() {
+      if (!videoReady || videoDuration < 0.5) return;
+      const p = scrollP();
+      // Loop the video once per scene so motion feels continuous
+      const tgt = ((p * SCENE_COUNT) % 1) * (videoDuration - 0.1);
+      lastTargetTime = tgt;
+      if (seeking) return;
+      if (Math.abs(video.currentTime - tgt) < 0.08) return;
+      try {
+        seeking = true;
+        video.currentTime = tgt;
+      } catch(e) {
+        seeking = false;
+      }
+    }
+
+    function update() {
+      const p = scrollP();
+      progress.style.width = (p * 100) + '%';
+      const si = sceneIndex();
+      sceneLabel.textContent = String(si + 1).padStart(2,'0') + ' / 0' + SCENE_COUNT + ' · ' + SCENE_NAMES[si];
+
+      // Parallax zoom on video
+      video.style.transform = 'scale(' + (1.08 + p * 0.15) + ')';
+
+      // Toggle active screen
+      screens.forEach((s, i) => s.classList.toggle('active', i === si));
+
+      applyVideoTime();
+    }
+
+    let rafId = null;
+    function onScroll() {
+      if (rafId) return;
+      rafId = requestAnimationFrame(() => { rafId = null; update(); });
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', update);
+    update();
+
+    // Keyboard: Space → next scene, R → reload
+    window.addEventListener('keydown', e => {
+      if (e.code === 'Space' && e.target === document.body) { e.preventDefault();
+        const cur = sceneIndex();
+        const nxt = cur < SCENE_COUNT - 1 ? cur + 1 : 0;
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        window.scrollTo({ top: (nxt / SCENE_COUNT) * max, behavior: 'smooth' });
+      }
+      if (e.key && e.key.toLowerCase() === 'r' && e.target === document.body) location.reload();
+    });
+
+    // ----- Cursor -----
+    const isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+    if (!isTouch) {
+      const m = { x: innerWidth/2, y: innerHeight/2 };
+      const r = { x: m.x, y: m.y };
+      window.addEventListener('mousemove', e => {
+        m.x = e.clientX; m.y = e.clientY;
+        const hov = e.target.closest('a,button,[data-cursor]');
+        ring.classList.toggle('hover', !!hov);
+      });
+      function cursorLoop() {
+        r.x += (m.x - r.x) * 0.18; r.y += (m.y - r.y) * 0.18;
+        dot.style.transform = `translate(${m.x}px,${m.y}px) translate(-50%,-50%)`;
+        ring.style.transform = `translate(${r.x}px,${r.y}px) translate(-50%,-50%)`;
+        requestAnimationFrame(cursorLoop);
+      }
+      requestAnimationFrame(cursorLoop);
+    } else {
+      dot.style.display = 'none';
+      ring.style.display = 'none';
+    }
+
+    // ----- Dust motes -----
+    let fxW, fxH;
+    function resizeFx() {
+      const dpr = Math.min(devicePixelRatio || 1, 2);
+      fxW = innerWidth; fxH = innerHeight;
+      fx.width = fxW * dpr; fx.height = fxH * dpr;
+      fx.style.width = fxW + 'px'; fx.style.height = fxH + 'px';
+      fxCtx.setTransform(dpr,0,0,dpr,0,0);
+    }
+    resizeFx(); addEventListener('resize', resizeFx);
+    const motes = Array.from({ length: 50 }, () => ({
+      x: Math.random()*innerWidth, y: Math.random()*innerHeight,
+      r: Math.random()*1.8 + 0.3,
+      vx: (Math.random()-0.5)*0.1, vy: -Math.random()*0.25 - 0.04,
+      a: Math.random()*0.5 + 0.25,
+    }));
+    function fxtick() {
+      fxCtx.clearRect(0,0,fxW,fxH);
+      const p = scrollP();
+      for (const m of motes) {
+        m.x += m.vx; m.y += m.vy * (1 + p * 2);
+        if (m.y < -10) { m.y = fxH + 10; m.x = Math.random()*fxW; }
+        fxCtx.fillStyle = `rgba(0,212,255,${m.a})`;
+        fxCtx.beginPath(); fxCtx.arc(m.x,m.y,m.r,0,Math.PI*2); fxCtx.fill();
+      }
+      requestAnimationFrame(fxtick);
+    }
+    requestAnimationFrame(fxtick);
   })();
   </script>
 </body>
