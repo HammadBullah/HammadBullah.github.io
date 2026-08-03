@@ -1,1 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="6" fill="#fafaf9"/><text x="16" y="22" text-anchor="middle" font-family="Inter,system-ui,sans-serif" font-size="14" font-weight="700" fill="#0f172a">HS</text></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" fill="#070503"/>
+  <text x="50%" y="54%" text-anchor="middle" dominant-baseline="middle"
+        font-family="Inter, system-ui, sans-serif" font-weight="800" font-size="28"
+        fill="#ff8a3d" style="letter-spacing:-1px">HS</text>
+  <circle cx="48" cy="16" r="3" fill="#ffb347" opacity="0.9"/>
+  <circle cx="48" cy="16" r="7" fill="#ff8a3d" opacity="0.25"/>
+</svg>
