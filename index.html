@@ -16,7 +16,6 @@
       font-family: -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
       overflow-x: hidden;
     }
-    /* Video background layer */
     #bg-video-wrap {
       position: fixed;
       inset: 0;
@@ -33,11 +32,9 @@
       height: 100%;
       object-fit: cover;
       opacity: 0;
-      transition: opacity 1.2s ease;
-      will-change: opacity;
+      transition: opacity 1s ease;
     }
-    #bg-video.loaded { opacity: 1; }
-    /* Fallback gradient shown while video loads */
+    #bg-video.on { opacity: 1; }
     #bg-fallback {
       position: absolute;
       inset: 0;
@@ -45,118 +42,60 @@
         radial-gradient(ellipse at 30% 30%, rgba(0,150,255,0.25), transparent 60%),
         radial-gradient(ellipse at 70% 70%, rgba(150,80,255,0.2), transparent 60%),
         #000;
-      z-index: -1;
       transition: opacity 0.8s;
     }
-    #bg-video.loaded ~ #bg-fallback { opacity: 0; }
-    /* Color grade overlay — tints the video as we scroll through scenes */
+    #bg-video.on ~ #bg-fallback { opacity: 0; }
     #grade {
-      position: fixed;
-      inset: 0;
-      z-index: 1;
-      pointer-events: none;
-      mix-blend-mode: overlay;
-      transition: background 0.8s ease;
+      position: fixed; inset: 0; z-index: 1; pointer-events: none;
+      mix-blend-mode: soft-light;
+      transition: background 1s ease;
     }
-    /* Vignette */
     .vignette {
-      position: fixed;
-      inset: 0;
-      z-index: 2;
-      pointer-events: none;
-      background: radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.8) 100%);
+      position: fixed; inset: 0; z-index: 2; pointer-events: none;
+      background: radial-gradient(ellipse at center, transparent 25%, rgba(0,0,0,0.85) 100%);
     }
-    /* Film grain */
     .grain {
-      position: fixed;
-      inset: 0;
-      z-index: 3;
-      pointer-events: none;
-      opacity: 0.08;
-      mix-blend-mode: overlay;
+      position: fixed; inset: 0; z-index: 3; pointer-events: none;
+      opacity: 0.07; mix-blend-mode: overlay;
       background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
     }
-    /* Light rays / dust layer (canvas) */
-    #fx {
-      position: fixed;
-      inset: 0;
-      z-index: 2;
-      pointer-events: none;
-    }
-    /* Scroll space */
-    #scroll-space {
-      position: relative;
-      z-index: 10;
-      height: 800vh;
-      width: 100%;
-    }
-    /* HUD */
+    #fx { position: fixed; inset: 0; z-index: 2; pointer-events: none; }
+    #scroll-space { position: relative; z-index: 10; height: 800vh; width: 100%; }
     #mark {
-      position: fixed;
-      top: 2rem;
-      left: 2rem;
-      z-index: 20;
-      font-family: 'SF Mono', ui-monospace, monospace;
-      font-size: 0.7rem;
-      letter-spacing: 0.25em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.7);
+      position: fixed; top: 2rem; left: 2rem; z-index: 20;
+      font-family: 'SF Mono', ui-monospace, monospace; font-size: 0.7rem;
+      letter-spacing: 0.25em; text-transform: uppercase; color: rgba(255,255,255,0.7);
       mix-blend-mode: difference;
     }
     #indicator {
-      position: fixed;
-      bottom: 2rem;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 20;
-      font-family: 'SF Mono', ui-monospace, monospace;
-      font-size: 0.7rem;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.6);
-      display: flex;
-      align-items: center;
-      gap: 0.7rem;
-      mix-blend-mode: difference;
+      position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%); z-index: 20;
+      font-family: 'SF Mono', ui-monospace, monospace; font-size: 0.7rem;
+      letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.6);
+      display: flex; align-items: center; gap: 0.7rem; mix-blend-mode: difference;
     }
     #indicator .bar { display: flex; gap: 5px; }
     #indicator .bar span {
-      display: inline-block;
-      width: 22px;
-      height: 2px;
-      background: rgba(255,255,255,0.2);
-      transition: background 0.4s, width 0.4s;
+      display: inline-block; width: 22px; height: 2px;
+      background: rgba(255,255,255,0.2); transition: background 0.4s, width 0.4s;
     }
     #indicator .bar span.active { background: #fff; width: 34px; }
     #hint {
-      position: fixed;
-      bottom: 4.5rem;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 20;
-      font-family: 'SF Mono', ui-monospace, monospace;
-      font-size: 0.65rem;
-      letter-spacing: 0.25em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.4);
-      animation: float 2.5s ease-in-out infinite;
-      mix-blend-mode: difference;
+      position: fixed; bottom: 4.5rem; left: 50%; transform: translateX(-50%); z-index: 20;
+      font-family: 'SF Mono', ui-monospace, monospace; font-size: 0.65rem;
+      letter-spacing: 0.25em; text-transform: uppercase; color: rgba(255,255,255,0.4);
+      animation: float 2.5s ease-in-out infinite; mix-blend-mode: difference;
     }
     @keyframes float {
       0%,100% { transform: translateX(-50%) translateY(0); opacity: 0.4; }
       50%     { transform: translateX(-50%) translateY(6px); opacity: 0.8; }
     }
-    /* Scene title placeholders (centered, fade in/out per scene) — removed for now;
-       content will be added later. Here we just ensure there's a canvas of depth. */
   </style>
 </head>
 <body>
-  <!-- Background video -->
   <div id="bg-video-wrap">
-    <video id="bg-video" muted playsinline preload="auto" crossorigin="anonymous"></video>
+    <video id="bg-video" muted playsinline preload="auto"></video>
     <div id="bg-fallback"></div>
   </div>
-
   <div id="grade"></div>
   <canvas id="fx"></canvas>
   <div class="vignette"></div>
@@ -172,52 +111,17 @@
 
   <script>
   (() => {
-    // ---- Configuration ----------------------------------------------------
-    // Hand-curated abstract / cinematic / art videos from Mixkit (free, direct MP4).
-    // Each is paired with a color grade applied over the top while that clip is
-    // "on screen" to give each scene its own mood.
+    // Abstract / cinematic art clips from Mixkit (free to use).
     const SCENES = [
-      {
-        // Deep ink / liquid abstract
-        src: 'https://assets.mixkit.co/videos/4793/4793-720.mp4',
-        tint: 'rgba(0, 180, 255, 0.08)',
-      },
-      {
-        // Blue particles / dust
-        src: 'https://assets.mixkit.co/videos/1206/1206-720.mp4',
-        tint: 'rgba(80, 120, 255, 0.12)',
-      },
-      {
-        // Ink swirl / purple smoke
-        src: 'https://assets.mixkit.co/videos/4795/4795-720.mp4',
-        tint: 'rgba(160, 80, 255, 0.14)',
-      },
-      {
-        // Golden / warm light rays
-        src: 'https://assets.mixkit.co/videos/4791/4791-720.mp4',
-        tint: 'rgba(255, 140, 40, 0.12)',
-      },
-      {
-        // Abstract neon / pink glow
-        src: 'https://assets.mixkit.co/videos/4801/4801-720.mp4',
-        tint: 'rgba(255, 60, 180, 0.14)',
-      },
-      {
-        // Fire / sparks abstract
-        src: 'https://assets.mixkit.co/videos/4773/4773-720.mp4',
-        tint: 'rgba(255, 80, 30, 0.12)',
-      },
-      {
-        // Water / blue ripple
-        src: 'https://assets.mixkit.co/videos/1193/1193-720.mp4',
-        tint: 'rgba(0, 220, 255, 0.10)',
-      },
-      {
-        // Stars / space
-        src: 'https://assets.mixkit.co/videos/35137/35137-720.mp4',
-        tint: 'rgba(255, 255, 255, 0.05)',
-      },
-    ]
+      { src: 'https://assets.mixkit.co/videos/4793/4793-720.mp4', tint: 'rgba(0,160,255,0.18)' },   // ink/liquid
+      { src: 'https://assets.mixkit.co/videos/4795/4795-720.mp4', tint: 'rgba(140,70,255,0.20)' },   // purple ink
+      { src: 'https://assets.mixkit.co/videos/1206/1206-720.mp4', tint: 'rgba(60,110,255,0.20)' },   // blue particles
+      { src: 'https://assets.mixkit.co/videos/4791/4791-720.mp4', tint: 'rgba(255,150,50,0.20)' },   // warm light
+      { src: 'https://assets.mixkit.co/videos/4801/4801-720.mp4', tint: 'rgba(255,50,170,0.20)' },   // neon pink
+      { src: 'https://assets.mixkit.co/videos/4773/4773-720.mp4', tint: 'rgba(255,80,30,0.18)' },    // sparks/fire
+      { src: 'https://assets.mixkit.co/videos/1193/1193-720.mp4', tint: 'rgba(0,200,255,0.15)' },    // water ripples
+      { src: 'https://assets.mixkit.co/videos/35137/35137-720.mp4', tint: 'rgba(255,255,255,0.08)' },// stars/space
+    ];
 
     const video = document.getElementById('bg-video');
     const grade = document.getElementById('grade');
@@ -227,7 +131,6 @@
     const fx = document.getElementById('fx');
     const fxCtx = fx.getContext('2d');
 
-    // ---- Build scene dots -------------------------------------------------
     SCENES.forEach((_, i) => {
       const s = document.createElement('span');
       s.dataset.idx = i;
@@ -235,145 +138,82 @@
     });
     const dots = dotsEl.querySelectorAll('span');
 
-    // ---- Video loading ----------------------------------------------------
-    // We preload the current + next clip and swap when the scene changes.
-    let currentIdx = -1;
-    const v = document.createElement('video');
-    v.muted = true; v.playsInline = true; v.preload = 'auto'; v.crossOrigin = 'anonymous';
-    let nextV = document.createElement('video');
-    nextV.muted = true; nextV.playsInline = true; nextV.preload = 'auto'; nextV.crossOrigin = 'anonymous';
-    let nextIdx = -1;
-    let loaded = false;
-
-    function clampScene(i) { return Math.max(0, Math.min(SCENES.length - 1, i)); }
-
+    // Preloader — preload first + next clips in hidden videos
+    const loaders = [];
     function preload(i) {
-      i = clampScene(i);
-      if (i === nextIdx || i === currentIdx) return;
-      nextIdx = i;
-      nextV.src = SCENES[i].src;
-      nextV.load();
+      i = Math.max(0, Math.min(SCENES.length - 1, i));
+      if (loaders[i]) return loaders[i];
+      const v = document.createElement('video');
+      v.muted = true; v.playsInline = true; v.preload = 'auto';
+      v.src = SCENES[i].src;
+      v.load();
+      loaders[i] = v;
+      return v;
     }
 
-    function switchTo(i) {
-      i = clampScene(i);
-      if (i === currentIdx) return;
-      // Swap videos: nextV becomes current, create a new next
-      const old = video;
-      const fresh = nextV;
-      fresh.style.position = 'absolute';
-      fresh.style.inset = '0';
-      fresh.style.width = '100%';
-      fresh.style.height = '100%';
-      fresh.style.objectFit = 'cover';
-      document.getElementById('bg-video-wrap').insertBefore(fresh, old);
-      video.replaceWith(fresh);
-      // (the id lives on whatever element is the active <video>)
-      fresh.id = 'bg-video';
-      // Re-assign reference
-      // Because we replaced, re-get
-      const newVideo = document.getElementById('bg-video');
-      // Re-bind to our global `video` var via property swap
-      Object.assign(video, { replaceWith: newVideo.replaceWith.bind(newVideo) }); // no-op trick
-      // Easier: just point our working reference
-      // We'll use a single active ref:
-      activeVideoEl = newVideo;
-      newVideo.currentTime = 0;
-      newVideo.play().catch(()=>{});
-      newVideo.classList.add('loaded');
-      old.remove();
-      // prepare next
-      const nv = document.createElement('video');
-      nv.muted = true; nv.playsInline = true; nv.preload = 'auto'; nv.crossOrigin = 'anonymous';
-      nextV = nv;
-      currentIdx = i;
-      // Apply tint for scene
+    let curIdx = -1;
+    function showScene(i) {
+      i = Math.max(0, Math.min(SCENES.length - 1, i));
+      if (i === curIdx) return;
+      const preloaded = loaders[i];
+      // Set src either from preloaded one or direct src
+      if (preloaded && preloaded.readyState >= 2) {
+        // Swap the actual src; fastest way is to re-assign src
+        video.src = SCENES[i].src;
+      } else {
+        video.src = SCENES[i].src;
+      }
+      video.currentTime = 0;
+      video.classList.remove('on');
+      const onReady = () => {
+        video.play().then(() => video.classList.add('on')).catch(() => video.classList.add('on'));
+      };
+      if (video.readyState >= 2) onReady();
+      else video.addEventListener('loadeddata', onReady, { once: true });
       grade.style.background = SCENES[i].tint;
-    }
-
-    let activeVideoEl = video;
-
-    function startWith(i) {
-      i = clampScene(i);
-      activeVideoEl.src = SCENES[i].src;
-      activeVideoEl.currentTime = 0;
-      activeVideoEl.addEventListener('loadeddata', () => {
-        activeVideoEl.play().then(() => {
-          activeVideoEl.classList.add('loaded');
-          loaded = true;
-        }).catch(()=>{});
-      }, { once: true });
-      activeVideoEl.load();
-      currentIdx = i;
-      grade.style.background = SCENES[i].tint;
+      curIdx = i;
       preload(i + 1);
+      preload(i - 1);
     }
 
-    startWith(0);
-
-    // ---- Scroll-driven video scrub ---------------------------------------
-    // The page is 800vh tall. Each scene = 100vh. Within each scene we scrub
-    // through the video at a mapped rate (speed * dt). When the scene changes
-    // we crossfade to the next clip.
-    function progress() {
+    function prog() {
       const max = document.documentElement.scrollHeight - window.innerHeight;
       return max <= 0 ? 0 : window.scrollY / max;
     }
 
-    let lastIdx = 0;
-    function onScroll() {
-      const p = progress();
-      const scene = clampScene(Math.floor(p * SCENES.length));
-      const localP = (p * SCENES.length) - scene; // 0..1 within scene
+    function tick() {
+      const p = prog();
+      const scene = Math.max(0, Math.min(SCENES.length - 1, Math.floor(p * SCENES.length)));
+      const local = (p * SCENES.length) - scene;
+      showScene(scene);
 
-      // Update HUD
+      // Scrub video time based on scroll within the scene
+      if (video.readyState >= 2 && isFinite(video.duration) && video.duration > 0) {
+        const tgt = local * Math.min(video.duration - 0.05, video.duration * 0.98);
+        if (Math.abs(video.currentTime - tgt) > 0.08) {
+          try { video.currentTime = tgt; } catch(e){}
+        }
+      }
+      video.style.transform = `scale(${1.05 + p * 0.1})`;
+
       sceneLabel.textContent = String(scene + 1).padStart(2, '0') + ' / 0' + SCENES.length;
       dots.forEach(d => d.classList.toggle('active', Number(d.dataset.idx) === scene));
-      const mm = Math.floor(p * 100);
-      mark.textContent = `HS · ${String(mm).padStart(2,'0')}%`;
-
-      // Switch scene + preload next
-      if (scene !== currentIdx) switchTo(scene);
-      preload(scene + 1);
-
-      // Scrub video: advance currentTime proportional to scroll since last tick
-      // (gives the "moves as you scroll" feel without fighting user scroll)
-      if (loaded && activeVideoEl.readyState >= 2) {
-        const dur = activeVideoEl.duration || 10;
-        // We want scrubbing: localP * duration, but keep smooth
-        const target = localP * Math.min(dur - 0.1, dur * 0.95);
-        try {
-          // Only set if different enough to avoid seeking thrash
-          if (Math.abs(activeVideoEl.currentTime - target) > 0.08) {
-            activeVideoEl.currentTime = target;
-          }
-        } catch(e) {}
-      }
-
-      // Also scale subtle zoom / parallax on the video
-      const z = 1.05 + p * 0.08;
-      activeVideoEl.style.transform = `scale(${z})`;
+      mark.textContent = `HS · ${String(Math.floor(p*100)).padStart(2,'0')}%`;
     }
+    window.addEventListener('scroll', tick, { passive: true });
 
-    window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
-
-    // ---- Particles / dust overlay on canvas ------------------------------
+    // Particles
     let fxW, fxH;
     function resizeFx() {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      fxW = window.innerWidth;
-      fxH = window.innerHeight;
-      fx.width = fxW * dpr;
-      fx.height = fxH * dpr;
-      fx.style.width = fxW + 'px';
-      fx.style.height = fxH + 'px';
+      fxW = window.innerWidth; fxH = window.innerHeight;
+      fx.width = fxW * dpr; fx.height = fxH * dpr;
+      fx.style.width = fxW + 'px'; fx.style.height = fxH + 'px';
       fxCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
     resizeFx();
     window.addEventListener('resize', resizeFx);
-
-    const motes = Array.from({ length: 80 }, () => ({
+    const motes = Array.from({ length: 70 }, () => ({
       x: Math.random() * window.innerWidth,
       y: Math.random() * window.innerHeight,
       r: Math.random() * 1.8 + 0.4,
@@ -382,10 +222,9 @@
       a: Math.random() * 0.6 + 0.2,
       tw: Math.random() * Math.PI * 2,
     }));
-
-    function tick() {
+    function fxtick() {
       fxCtx.clearRect(0, 0, fxW, fxH);
-      const p = progress();
+      const p = prog();
       for (const m of motes) {
         m.x += m.vx + Math.sin(m.tw) * 0.1;
         m.y += m.vy * (1 + p * 2);
@@ -393,26 +232,30 @@
         if (m.y < -10) { m.y = fxH + 10; m.x = Math.random() * fxW; }
         if (m.x < -10) m.x = fxW + 10;
         if (m.x > fxW + 10) m.x = -10;
-        const col = p < 0.5 ? `rgba(180,220,255,${m.a})` : `rgba(255,220,180,${m.a})`;
-        fxCtx.fillStyle = col;
+        fxCtx.fillStyle = p < 0.5 ? `rgba(200,230,255,${m.a})` : `rgba(255,220,190,${m.a})`;
         fxCtx.beginPath();
         fxCtx.arc(m.x, m.y, m.r, 0, Math.PI * 2);
         fxCtx.fill();
       }
-      requestAnimationFrame(tick);
+      requestAnimationFrame(fxtick);
     }
-    requestAnimationFrame(tick);
+    requestAnimationFrame(fxtick);
 
-    // Keyboard shortcut: space to jump to next scene
+    // Keyboard: Space → next scene
     window.addEventListener('keydown', e => {
       if (e.code === 'Space') {
         e.preventDefault();
-        const p = progress();
+        const p = prog();
         const cur = Math.floor(p * SCENES.length);
-        const next = Math.min(SCENES.length - 1, cur + 1);
-        window.scrollTo({ top: (next / SCENES.length) * (document.documentElement.scrollHeight - window.innerHeight), behavior: 'smooth' });
+        const nxt = Math.min(SCENES.length - 1, cur + 1);
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        window.scrollTo({ top: (nxt / SCENES.length) * max, behavior: 'smooth' });
       }
     });
+
+    // Kick off
+    showScene(0);
+    tick();
   })();
   </script>
 </body>
