@@ -404,7 +404,7 @@
   <div id="mark"><span class="dot"></span> HAMMAD SAFI · DEV</div>
   <div id="scene-label">01 / 06 · INTRO</div>
   <div id="hint">SCROLL ↓</div>
-  <div id="corner">v3.3 · HATFIELD, UK</div>
+  <div id="corner">v3.4 · HATFIELD, UK</div>
 
   <div class="screen active" data-idx="0">
     <div class="inner">
@@ -413,7 +413,7 @@
       <p>AI & software engineer. MSc Computer Science at Hertfordshire. Building intelligent products where machine learning meets real users.</p>
       <div class="actions">
         <a href="mailto:hammabdullah@gmail.com" class="btn">Get in touch →</a>
-        <a href="#work" class="btn ghost">View projects</a>
+        <a href="#work" class="btn ghost" data-jump="2">View projects</a>
       </div>
       <div class="facts">
         <div class="fact"><div class="k">Status</div><div class="v">Available for roles</div></div>
@@ -595,6 +595,17 @@
     window.addEventListener('scroll', onScroll, {passive:true});
     window.addEventListener('resize', update);
     update();
+
+    // Data-jump buttons (smooth-scroll to specific scene)
+    document.querySelectorAll('[data-jump]').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.preventDefault();
+        const target = parseInt(btn.getAttribute('data-jump'), 10);
+        if (isNaN(target)) return;
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        window.scrollTo({ top: (target / SCENE_COUNT) * max, behavior: 'smooth' });
+      });
+    });
 
     // Keyboard
     window.addEventListener('keydown', e => {
