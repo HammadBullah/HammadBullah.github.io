@@ -148,35 +148,73 @@
       letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-mute); mix-blend-mode: screen;
     }
 
-    /* ---------- Screen transitions — content flows TR→BL like the light ---------- */
+    /* ---------- Screen content — transitions FROM INSIDE OUT ----------
+       Content emerges from deep within the footage: starts tiny/blurred/far away,
+       scales outward and into crisp focus as if bursting out of the light.
+       Exits keep growing past the viewer. */
     .screen {
       position: fixed; inset: 0; z-index: 15;
       display: flex; align-items: center; justify-content: center;
       padding: 2rem;
       opacity: 0;
-      transform: translate(60px, -50px);
-      transition: opacity 0.9s cubic-bezier(.2,.7,.2,1),
-                  transform 1.1s cubic-bezier(.16,1,.3,1),
-                  filter 1s ease;
-      filter: blur(6px);
+      transform: scale(0.55);
+      transform-origin: center center;
+      transition: opacity 1s cubic-bezier(.2,.7,.2,1),
+                  transform 1.3s cubic-bezier(.16,1,.3,1),
+                  filter 1.2s ease;
+      filter: blur(22px);
       pointer-events: none;
     }
     .screen.leaving {
+      /* Exiting: blows past the viewer — keeps growing, overshoots, dissolves */
       opacity: 0;
-      transform: translate(-80px, 70px);
-      filter: blur(10px);
+      transform: scale(1.35);
+      filter: blur(25px);
     }
     .screen.active {
       opacity: 1;
-      transform: translate(0,0);
+      transform: scale(1);
       filter: blur(0);
       pointer-events: auto;
     }
-    .screen.active .inner { animation: carry 8s ease-in-out infinite alternate; }
-    @keyframes carry {
-      0%   { transform: translate(0, 0); }
-      100% { transform: translate(calc(var(--flow-x)*6px), calc(var(--flow-y)*8px)); }
+    /* Subtle breathing pulse while active — content continues to "emanate" outward */
+    .screen.active .inner {
+      animation: breathe 6s ease-in-out infinite alternate;
     }
+    @keyframes breathe {
+      0%   { transform: scale(1);    opacity: 1; }
+      100% { transform: scale(1.025); opacity: 1; }
+    }
+    /* Stagger children so tag → heading → copy → actions/facts bloom outward in sequence */
+    .screen .tag,
+    .screen h1,
+    .screen p,
+    .screen .actions,
+    .screen .chips,
+    .screen .list,
+    .screen .facts {
+      opacity: 0;
+      transform: scale(0.75);
+      transition: opacity 0.8s cubic-bezier(.2,.7,.2,1),
+                  transform 0.9s cubic-bezier(.16,1,.3,1),
+                  filter 0.9s ease;
+      filter: blur(8px);
+    }
+    .screen.active .tag      { transition-delay: 0.15s; opacity: 1; transform: scale(1); filter: blur(0); }
+    .screen.active h1       { transition-delay: 0.30s; opacity: 1; transform: scale(1); filter: blur(0); }
+    .screen.active p        { transition-delay: 0.45s; opacity: 1; transform: scale(1); filter: blur(0); }
+    .screen.active .actions,
+    .screen.active .chips,
+    .screen.active .list    { transition-delay: 0.60s; opacity: 1; transform: scale(1); filter: blur(0); }
+    .screen.active .facts   { transition-delay: 0.75s; opacity: 1; transform: scale(1); filter: blur(0); }
+    /* When leaving, kill child transitions so parent scale takes over cleanly */
+    .screen.leaving .tag,
+    .screen.leaving h1,
+    .screen.leaving p,
+    .screen.leaving .actions,
+    .screen.leaving .chips,
+    .screen.leaving .list,
+    .screen.leaving .facts { opacity: 0; transform: scale(1.1); filter: blur(10px); transition-delay: 0s; transition-duration: 0.5s; }
     .screen .inner { max-width: 900px; width: 100%; }
     .screen .tag {
       font-family: 'JetBrains Mono', monospace;
@@ -214,8 +252,8 @@
       box-shadow: 0 0 30px rgba(255,138,26,0.45), inset 0 1px 0 rgba(255,255,255,0.25);
     }
     .btn:hover {
-      transform: translateY(-2px) translate(calc(var(--flow-x)*-2px), calc(var(--flow-y)*-2px));
-      box-shadow: 0 10px 40px rgba(255,138,26,0.65), 0 0 60px rgba(255,176,32,0.3);
+      transform: translateY(-2px) scale(1.05);
+      box-shadow: 0 10px 40px rgba(255,138,26,0.65), 0 0 60px rgba(255,176,32,0.35);
     }
     .btn.ghost {
       background: transparent; color: var(--text);
@@ -240,7 +278,8 @@
       -webkit-backdrop-filter: blur(10px);
       transition: border-color 0.3s ease;
     }
-    .fact:hover { border-color: rgba(255,176,32,0.35); }
+    .fact:hover { border-color: rgba(255,176,32,0.35); transform: scale(1.03); }
+    .fact { transition: border-color 0.3s ease, transform 0.3s cubic-bezier(.2,.7,.2,1); }
     .fact .k { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold); opacity: 0.85; margin-bottom: 0.3rem; }
     .fact .v { font-size: 0.9rem; color: var(--text); }
 
@@ -271,9 +310,10 @@
     }
     .list a.proj { cursor: none; }
     .list a.proj:hover {
-      padding-left: 0.8rem;
-      background: linear-gradient(90deg, rgba(255,176,32,0.06), transparent);
+      background: linear-gradient(90deg, rgba(255,176,32,0.08), transparent);
+      transform: scale(1.015);
     }
+    .list a.proj { transition: padding 0.4s cubic-bezier(.2,.7,.2,1), background 0.4s ease, transform 0.4s cubic-bezier(.2,.7,.2,1); }
     .list .row .y,
     .list a.proj .y { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--amber); letter-spacing: 0.05em; padding-top: 0.15rem; }
     .list .row .r,
@@ -322,21 +362,23 @@
       box-shadow: 0 0 20px rgba(255,176,32,0.3);
     }
 
-    /* Diagonal light-sweep line */
+    /* Decorative emanating light ring from center (reinforces inside→out) */
     #flow-line {
-      position: fixed; z-index: 20; top: 0; right: 0;
-      width: 140vmax; height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(255,210,72,0.4), transparent);
-      transform-origin: top right;
-      transform: rotate(45deg) translateY(-80px);
+      position: fixed; z-index: 20;
+      top: 50%; left: 50%;
+      width: 40px; height: 40px;
+      margin-left: -20px; margin-top: -20px;
+      border: 1px solid rgba(255,210,72,0.5);
+      border-radius: 50%;
       pointer-events: none; mix-blend-mode: screen;
-      animation: flowSweep 7s ease-in-out infinite;
+      transform: scale(0);
+      animation: emit 5s ease-out infinite;
     }
-    @keyframes flowSweep {
-      0%   { transform: rotate(45deg) translateY(-80px); opacity: 0; }
-      20%  { opacity: 0.6; }
-      80%  { opacity: 0.6; }
-      100% { transform: rotate(45deg) translateY(calc(100vh + 80px)); opacity: 0; }
+    #flow-line.b2 { animation-delay: 2.5s; border-color: rgba(255,176,32,0.35); }
+    @keyframes emit {
+      0%   { transform: scale(0);    opacity: 0.9; }
+      70%  { opacity: 0.5; }
+      100% { transform: scale(40);  opacity: 0; }
     }
 
     @media (max-width: 640px) {
@@ -345,7 +387,7 @@
       #mark, #corner, #scene-label { padding: 0 0.5rem; }
       #cur-dot, #cur-ring { display: none; }
       * { cursor: auto !important; }
-      #flow-line { display: none; }
+      #flow-line { display: none !important; }
     }
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
@@ -375,6 +417,7 @@
   <div class="scan"></div>
   <div class="grain"></div>
   <div id="flow-line"></div>
+  <div id="flow-line" class="b2"></div>
 
   <div id="cur-dot"></div>
   <div id="cur-ring"></div>
@@ -383,7 +426,7 @@
   <div id="mark"><span class="dot"></span> HAMMAD SAFI · DEV</div>
   <div id="scene-label">01 / 06 · INTRO</div>
   <div id="hint">SCROLL ↓</div>
-  <div id="corner">v3.1 · HATFIELD, UK</div>
+  <div id="corner">v3.2 · HATFIELD, UK</div>
 
   <div class="screen active" data-idx="0">
     <div class="inner">
