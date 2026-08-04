@@ -362,32 +362,12 @@
       box-shadow: 0 0 20px rgba(255,176,32,0.3);
     }
 
-    /* Decorative emanating light ring from center (reinforces inside→out) */
-    #flow-line {
-      position: fixed; z-index: 20;
-      top: 50%; left: 50%;
-      width: 40px; height: 40px;
-      margin-left: -20px; margin-top: -20px;
-      border: 1px solid rgba(255,210,72,0.5);
-      border-radius: 50%;
-      pointer-events: none; mix-blend-mode: screen;
-      transform: scale(0);
-      animation: emit 5s ease-out infinite;
-    }
-    #flow-line.b2 { animation-delay: 2.5s; border-color: rgba(255,176,32,0.35); }
-    @keyframes emit {
-      0%   { transform: scale(0);    opacity: 0.9; }
-      70%  { opacity: 0.5; }
-      100% { transform: scale(40);  opacity: 0; }
-    }
-
     @media (max-width: 640px) {
       .list .row, .list a.proj { grid-template-columns: 1fr; gap: 0.2rem; }
       #mark, #corner, #scene-label, #hint { font-size: 0.6rem; }
       #mark, #corner, #scene-label { padding: 0 0.5rem; }
       #cur-dot, #cur-ring { display: none; }
       * { cursor: auto !important; }
-      #flow-line { display: none !important; }
     }
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
@@ -416,8 +396,6 @@
   <canvas id="fx"></canvas>
   <div class="scan"></div>
   <div class="grain"></div>
-  <div id="flow-line"></div>
-  <div id="flow-line" class="b2"></div>
 
   <div id="cur-dot"></div>
   <div id="cur-ring"></div>
@@ -426,7 +404,7 @@
   <div id="mark"><span class="dot"></span> HAMMAD SAFI · DEV</div>
   <div id="scene-label">01 / 06 · INTRO</div>
   <div id="hint">SCROLL ↓</div>
-  <div id="corner">v3.2 · HATFIELD, UK</div>
+  <div id="corner">v3.3 · HATFIELD, UK</div>
 
   <div class="screen active" data-idx="0">
     <div class="inner">
