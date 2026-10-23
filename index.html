@@ -57,9 +57,8 @@
         radial-gradient(400px circle at 50% 55%, rgba(255,176,32,0.08), transparent 70%);
       pointer-events: none;
     }
-    #boot-center { position: relative; z-index: 2; text-align: center; font-family: 'JetBrains Mono', ui-monospace, monospace; }
+    #boot-center { position: relative; z-index: 2; text-align: center; }
     #boot-mark {
-      font-family: 'Inter', -apple-system, sans-serif;
       font-size: clamp(2.6rem, 8vw, 4.8rem);
       font-weight: 700; letter-spacing: -0.03em;
       color: var(--cream);
@@ -69,7 +68,7 @@
       transition: opacity 0.9s ease, transform 1.1s cubic-bezier(.16,1,.3,1), filter 1s ease;
       filter: blur(10px);
     }
-    #boot-mark em { font-style: italic; font-weight: 400; color: var(--gold); font-family: Georgia, serif; }
+    #boot-mark em { font-style: italic; font-weight: 400; color: var(--gold); }
     #boot-mark.on { opacity: 1; transform: scale(1); filter: blur(0); }
     #boot-sub {
       font-size: 0.78rem; letter-spacing: 0.35em; text-transform: uppercase;
@@ -306,7 +305,13 @@
       text-shadow: 0 4px 40px rgba(0,0,0,0.7), 0 0 80px rgba(255,138,26,0.2);
       color: var(--cream);
     }
-    .screen h1 em { font-style: italic; font-weight: 400; color: var(--amber); font-family: Georgia, serif; }
+    /* Global type stack: Inter everywhere, JetBrains Mono ONLY for code/HUD accents */
+    body, .btn, .fact .v, .list .row .r, .list a.proj .r, .chip, .screen h1 { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif !important; }
+    .tag, #mark, #corner, #scene-label, #hint, #depth, #boot-sub, #boot-pct, #boot-skip, .fact .k, .list .row .y, .list a.proj .y, .chip { font-family: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace !important; }
+    /* Kill all italic serif — italics still italic but in Inter */
+    .screen h1 em { font-style: italic; font-weight: 400; color: var(--amber); font-family: inherit !important; }
+    #boot-mark { font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif !important; }
+    #boot-mark em { font-style: italic; font-weight: 400; color: var(--gold); font-family: inherit !important; }
     .screen h1 .accent {
       background: linear-gradient(135deg, var(--cream), var(--gold), var(--amber));
       -webkit-background-clip: text; background-clip: text;
@@ -325,7 +330,6 @@
       color: #1a0e00;
       border-radius: 999px; font-size: 0.9rem; font-weight: 600;
       text-decoration: none; transition: all 0.3s cubic-bezier(.2,.7,.2,1);
-      font-family: 'Inter', sans-serif;
       box-shadow: 0 0 30px rgba(255,138,26,0.45), inset 0 1px 0 rgba(255,255,255,0.25);
     }
     .btn:hover {
@@ -494,7 +498,7 @@
   <div id="mark"><span class="dot"></span> HAMMAD SAFI · AI ENGINEER</div>
   <div id="scene-label">01 / 06 · INTRO</div>
   <div id="hint">SCROLL ↓</div>
-  <div id="corner">v4.1 · NOTTINGHAM, UK</div>
+  <div id="corner">v4.2 · NOTTINGHAM, UK</div>
 
   <div class="screen active" data-idx="0">
     <div class="inner">
