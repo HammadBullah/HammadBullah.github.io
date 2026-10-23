@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Hammad Safi — AI & Software Engineer. Python, FastAPI, LLMs, RAG, agentic systems." />
-  <meta name="theme-color" content="#0a0906" />
+  <meta name="description" content="Hammad Safi — AI & Software Engineer." />
+  <meta name="theme-color" content="#000000" />
   <title>Hammad Safi — AI & Software Engineer</title>
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,463 +12,414 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     :root {
-      --gold:       #ffc857;
-      --gold-dim:   rgba(255,200,87,0.12);
-      --gold-bright:#ffe6a8;
-      --bg:         #0a0906;
-      --bg-2:       #0f0d08;
-      --bg-elev:    #141109;
-      --line:       rgba(255,200,87,0.18);
-      --text:       #e9dfc8;
-      --text-soft:  #c5baa1;
-      --text-mute:  #8a8169;
-      --mono:       'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
-      --sans:       'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      --bg:    #000;
+      --bg-2:  #0a0a0a;
+      --bg-3:  #111;
+      --line:  #262626;
+      --line-2:#1a1a1a;
+      --text:  #f5f5f5;
+      --soft:  #b5b5b5;
+      --mute:  #6b6b6b;
+      --white: #ffffff;
+      --mono:  'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+      --sans:  'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+    html { scroll-behavior: smooth; scroll-padding-top: 100px; }
     body {
       background: var(--bg);
       color: var(--text);
       font-family: var(--sans);
       -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
       line-height: 1.6;
       overflow-x: hidden;
+      font-feature-settings: 'ss01','cv11';
     }
 
-    /* ---------- Subtle ambient background ---------- */
-    #bg {
-      position: fixed; inset: 0; z-index: -1; overflow: hidden;
-      background:
-        radial-gradient(ellipse at 50% 0%, rgba(255,200,87,0.06), transparent 60%),
-        radial-gradient(ellipse at 20% 80%, rgba(255,140,30,0.04), transparent 50%),
-        var(--bg);
+    /* Subtle film-grain noise for a monochrome film feel — pure aesthetic, no video */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 1; pointer-events: none;
+      opacity: 0.04;
+      mix-blend-mode: overlay;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
     }
-    #bg video {
-      position: absolute; inset: 0; width: 100%; height: 100%;
-      object-fit: cover;
-      opacity: 0.08; /* very dim — just texture, not competition */
-      filter: blur(2px) saturate(1.1);
-      pointer-events: none;
-    }
-    #bg::after {
-      content: ''; position: absolute; inset: 0;
-      background: linear-gradient(180deg, rgba(10,9,6,0.6) 0%, rgba(10,9,6,0.85) 70%, var(--bg) 100%);
+    /* Soft vignette */
+    body::after {
+      content: '';
+      position: fixed; inset: 0; z-index: 1; pointer-events: none;
+      background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.6) 100%);
     }
 
     /* ---------- Nav ---------- */
     nav {
       position: fixed; top: 0; left: 0; right: 0; z-index: 50;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      background: rgba(10,9,6,0.7);
+      background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       border-bottom: 1px solid transparent;
-      transition: border-color 0.3s ease, background 0.3s ease;
+      transition: border-color 0.3s ease;
     }
     nav.scrolled { border-bottom-color: var(--line); }
     .nav-inner {
-      max-width: 1200px; margin: 0 auto; padding: 1.1rem 2rem;
+      max-width: 1200px; margin: 0 auto;
+      padding: 1.3rem 2.5rem;
       display: flex; align-items: center; justify-content: space-between;
     }
-    .nav-mark {
-      font-family: var(--mono); font-size: 0.85rem;
-      color: var(--gold); font-weight: 500; letter-spacing: 0.02em;
-      text-decoration: none;
+    .mark {
+      font-weight: 700; font-size: 1.05rem; letter-spacing: -0.02em;
+      color: var(--white); text-decoration: none;
     }
-    .nav-links { display: flex; gap: 1.8rem; align-items: center; list-style: none; }
+    .mark span { color: var(--mute); font-weight: 400; }
+    .nav-links { display: flex; gap: 2.2rem; align-items: center; list-style: none; }
     .nav-links a {
-      font-family: var(--mono); font-size: 0.8rem;
-      color: var(--text-soft); text-decoration: none;
+      font-size: 0.85rem; color: var(--soft); text-decoration: none;
       transition: color 0.2s ease;
+      font-weight: 400;
     }
-    .nav-links a .num { color: var(--gold); margin-right: 0.4rem; font-size: 0.72rem; }
-    .nav-links a:hover { color: var(--gold); }
-    .nav-resume {
-      font-family: var(--mono); font-size: 0.78rem;
-      color: var(--gold); border: 1px solid var(--gold);
-      padding: 0.55rem 1rem; border-radius: 6px;
-      text-decoration: none; margin-left: 0.5rem;
-      transition: background 0.2s ease, transform 0.2s ease;
+    .nav-links a .num { font-family: var(--mono); font-size: 0.72rem; color: var(--mute); margin-right: 0.4rem; }
+    .nav-links a:hover { color: var(--white); }
+    .resume-btn {
+      font-size: 0.82rem; color: var(--white);
+      border: 1px solid var(--white); padding: 0.6rem 1.1rem;
+      border-radius: 4px; text-decoration: none;
+      transition: all 0.2s ease;
+      background: transparent;
+      font-family: var(--sans);
     }
-    .nav-resume:hover { background: var(--gold-dim); transform: translateY(-1px); }
-    @media (max-width: 640px) { .nav-links { gap: 1rem; } .nav-links li:not(.nav-resume-wrap) { display: none; } .nav-inner { padding: 1rem 1.25rem; } }
+    .resume-btn:hover { background: var(--white); color: var(--bg); }
+    @media (max-width: 720px) {
+      .nav-inner { padding: 1rem 1.5rem; }
+      .nav-links li:not(:last-child) { display: none; }
+      .nav-links { gap: 0; }
+    }
 
     /* ---------- Layout ---------- */
-    main { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
-    section {
-      padding: 7rem 0;
-      max-width: 900px;
-      opacity: 0;
-      transform: translateY(20px);
-      transition: opacity 0.8s cubic-bezier(.2,.7,.2,1), transform 0.8s cubic-bezier(.2,.7,.2,1);
-    }
-    section.visible { opacity: 1; transform: translateY(0); }
-    @media (max-width: 640px) { main { padding: 0 1.25rem; } section { padding: 5rem 0; } }
+    main { position: relative; z-index: 2; max-width: 1200px; margin: 0 auto; padding: 0 2.5rem; }
+    section { padding: 8rem 0; max-width: 900px; }
+    @media (max-width: 720px) { main { padding: 0 1.5rem; } section { padding: 5.5rem 0; } }
 
-    /* ---------- Section headings ---------- */
-    .section-head {
+    /* ---------- Numbered section heading ---------- */
+    .h {
       display: flex; align-items: center;
-      margin-bottom: 3rem; font-size: clamp(1.5rem, 3vw, 1.85rem);
-      font-weight: 700; color: var(--text); white-space: nowrap;
+      margin-bottom: 3.5rem; font-size: clamp(1.4rem, 2.5vw, 1.75rem);
+      font-weight: 600; color: var(--white); white-space: nowrap;
+      letter-spacing: -0.01em;
     }
-    .section-head .num {
-      font-family: var(--mono); color: var(--gold);
-      font-size: 1rem; font-weight: 500;
-      margin-right: 0.8rem;
-    }
-    .section-head::after {
-      content: ''; display: block;
-      width: 280px; height: 1px;
-      background: var(--line);
-      margin-left: 1.5rem;
-      align-self: center;
-    }
-    @media (max-width: 640px) { .section-head::after { width: 100%; } }
+    .h .num { font-family: var(--mono); font-size: 0.95rem; color: var(--mute); font-weight: 400; margin-right: 0.8rem; }
+    .h::after { content: ''; flex-grow: 1; height: 1px; background: var(--line); margin-left: 1.5rem; }
 
-    /* ---------- Hero ---------- */
-    #hero {
-      min-height: 100vh;
-      display: flex; flex-direction: column; justify-content: center;
-      padding: 10rem 0 6rem 0;
-      max-width: 820px;
+    /* ---------- HERO ---------- */
+    #hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; padding: 8rem 0 6rem; max-width: 820px; }
+    .eyebrow { font-family: var(--mono); font-size: 0.9rem; color: var(--mute); margin-bottom: 2rem; letter-spacing: 0.02em; }
+    h1.name {
+      font-size: clamp(3rem, 9vw, 5.5rem); font-weight: 800;
+      letter-spacing: -0.04em; line-height: 1; color: var(--white);
+      margin-bottom: 0.6rem;
     }
-    .hero-kicker {
-      font-family: var(--mono); font-size: 0.95rem;
-      color: var(--gold); margin-bottom: 1.5rem;
+    h2.tagline {
+      font-size: clamp(2rem, 6vw, 4rem); font-weight: 700;
+      letter-spacing: -0.035em; line-height: 1.1; color: var(--mute);
+      margin-bottom: 2.2rem;
     }
-    .hero-name {
-      font-size: clamp(2.75rem, 8vw, 5rem);
-      font-weight: 800; letter-spacing: -0.03em; line-height: 1.05;
-      color: var(--gold-bright); margin-bottom: 0.75rem;
-    }
-    .hero-tag {
-      font-size: clamp(1.75rem, 5vw, 3.25rem);
-      font-weight: 700; letter-spacing: -0.025em; line-height: 1.1;
-      color: var(--text-mute); margin-bottom: 2rem;
-    }
-    .hero-bio {
-      font-size: 1.08rem; color: var(--text-soft);
-      max-width: 620px; line-height: 1.7; margin-bottom: 2.5rem;
-    }
-    .hero-bio a { color: var(--gold); text-decoration: none; border-bottom: 1px solid var(--gold-dim); transition: border-color 0.2s; }
-    .hero-bio a:hover { border-bottom-color: var(--gold); }
-    .cta-row { display: flex; gap: 1rem; flex-wrap: wrap; }
-
-    /* ---------- Buttons ---------- */
+    .bio { font-size: 1.05rem; color: var(--soft); max-width: 620px; line-height: 1.75; margin-bottom: 3rem; }
+    .bio a { color: var(--white); text-decoration: none; border-bottom: 1px solid var(--mute); transition: border-color 0.2s; }
+    .bio a:hover { border-bottom-color: var(--white); }
+    .cta { display: flex; gap: 1rem; flex-wrap: wrap; }
     .btn {
-      display: inline-flex; align-items: center; gap: 0.5rem;
-      padding: 0.9rem 1.4rem;
-      border-radius: 6px; font-size: 0.88rem; font-weight: 500;
-      text-decoration: none;
-      font-family: var(--mono);
-      transition: all 0.2s ease;
-      cursor: pointer;
+      display: inline-flex; align-items: center;
+      padding: 1rem 1.6rem;
+      font-size: 0.88rem; font-weight: 500;
+      border-radius: 4px; text-decoration: none;
+      transition: all 0.2s ease; cursor: pointer;
+      font-family: var(--sans);
+      letter-spacing: 0.01em;
     }
-    .btn.primary {
-      color: var(--gold);
-      border: 1px solid var(--gold);
-      background: transparent;
-    }
-    .btn.primary:hover { background: var(--gold-dim); transform: translateY(-2px); }
-    .btn.ghost {
-      color: var(--text-soft);
-      border: 1px solid var(--line);
-    }
-    .btn.ghost:hover { color: var(--gold); border-color: var(--gold); }
+    .btn.primary { background: var(--white); color: var(--bg); border: 1px solid var(--white); }
+    .btn.primary:hover { background: transparent; color: var(--white); }
+    .btn.ghost { background: transparent; color: var(--white); border: 1px solid var(--white); }
+    .btn.ghost:hover { background: var(--white); color: var(--bg); }
 
-    /* ---------- About ---------- */
-    #about p { color: var(--text-soft); margin-bottom: 1rem; font-size: 1.02rem; }
-    #about p a { color: var(--gold); text-decoration: none; }
-    .skills-grid {
-      display: grid; grid-template-columns: repeat(2, minmax(0,1fr));
-      gap: 0.4rem 2rem; margin-top: 1.5rem;
-      padding: 0; list-style: none;
+    /* ---------- ABOUT ---------- */
+    #about p { color: var(--soft); font-size: 1rem; margin-bottom: 1rem; line-height: 1.75; max-width: 700px; }
+    #about p a { color: var(--white); text-decoration: none; border-bottom: 1px solid var(--line); }
+    #about p a:hover { border-bottom-color: var(--white); }
+    .skills {
+      display: grid; grid-template-columns: repeat(3, minmax(0,1fr));
+      gap: 0.3rem 1.5rem; margin-top: 1.8rem; padding: 0; list-style: none;
     }
-    .skills-grid li {
-      font-family: var(--mono); font-size: 0.85rem;
-      color: var(--text-soft); position: relative;
-      padding-left: 1.2rem;
+    .skills li {
+      font-family: var(--mono); font-size: 0.82rem; color: var(--soft);
+      position: relative; padding-left: 1.2rem;
     }
-    .skills-grid li::before {
-      content: '▹'; color: var(--gold); position: absolute; left: 0; top: 0;
-      font-size: 0.7rem;
-    }
-    @media (max-width: 640px) { .skills-grid { grid-template-columns: 1fr; } }
+    .skills li::before { content: '·'; color: var(--white); position: absolute; left: 0; top: -2px; font-size: 1.2rem; line-height: 1; }
+    @media (max-width: 720px) { .skills { grid-template-columns: repeat(2,1fr); } }
 
-    /* ---------- Experience ---------- */
-    .exp-item { margin-bottom: 3.5rem; display: grid; grid-template-columns: 140px 1fr; gap: 1.5rem; }
-    .exp-period {
-      font-family: var(--mono); font-size: 0.8rem;
-      color: var(--text-mute); padding-top: 0.25rem;
+    /* ---------- EXPERIENCE (tabular, clean) ---------- */
+    .job {
+      display: grid; grid-template-columns: 140px 1fr;
+      gap: 1.75rem; margin-bottom: 3.5rem;
+      padding: 0; border-left: 1px solid transparent;
+      transition: padding-left 0.25s ease, border-color 0.25s ease;
     }
-    .exp-body h3 { font-size: 1.2rem; font-weight: 600; color: var(--text); margin-bottom: 0.3rem; }
-    .exp-body h3 a { color: var(--text); text-decoration: none; }
-    .exp-body h3 .at { color: var(--gold); }
-    .exp-body h3 .at a { color: var(--gold); }
-    .exp-body h3 a:hover { color: var(--gold); }
-    .exp-body .sub { font-family: var(--mono); font-size: 0.82rem; color: var(--text-mute); margin-bottom: 1rem; }
-    .exp-body ul { list-style: none; padding: 0; }
-    .exp-body ul li {
-      position: relative; padding-left: 1.4rem; margin-bottom: 0.6rem;
-      color: var(--text-soft); font-size: 0.96rem; line-height: 1.6;
+    .job:hover { padding-left: 1rem; border-left-color: var(--white); }
+    .period { font-family: var(--mono); font-size: 0.78rem; color: var(--mute); padding-top: 0.25rem; }
+    .jobbody h3 { font-size: 1.15rem; font-weight: 600; color: var(--white); margin-bottom: 0.2rem; letter-spacing: -0.01em; }
+    .jobbody h3 a { color: var(--white); text-decoration: none; transition: color 0.2s; }
+    .jobbody h3 .at { color: var(--mute); font-weight: 400; }
+    .jobbody h3 .at a { color: var(--mute); }
+    .jobbody h3 a:hover { color: var(--white); }
+    .jobbody h3 .at a:hover { color: var(--white); }
+    .jobbody .sub { font-family: var(--mono); font-size: 0.78rem; color: var(--mute); margin-bottom: 1.1rem; }
+    .jobbody ul { list-style: none; padding: 0; }
+    .jobbody ul li {
+      position: relative; padding-left: 1.3rem; margin-bottom: 0.6rem;
+      color: var(--soft); font-size: 0.95rem; line-height: 1.65;
     }
-    .exp-body ul li::before {
-      content: '▹'; color: var(--gold); position: absolute; left: 0; top: 0.2rem;
-      font-size: 0.75rem;
-    }
-    .tech-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.9rem; }
-    .chip {
-      font-family: var(--mono); font-size: 0.75rem;
-      color: var(--gold); padding: 0.25rem 0.65rem;
-      background: var(--gold-dim); border-radius: 999px;
-    }
-    @media (max-width: 640px) {
-      .exp-item { grid-template-columns: 1fr; gap: 0.5rem; }
-      .exp-period { padding-top: 0; }
+    .jobbody ul li::before { content: '—'; color: var(--mute); position: absolute; left: 0; }
+    .stack { display: flex; flex-wrap: wrap; gap: 0.4rem 1rem; margin-top: 1rem; }
+    .stack span { font-family: var(--mono); font-size: 0.75rem; color: var(--mute); }
+    @media (max-width: 720px) {
+      .job { grid-template-columns: 1fr; gap: 0.6rem; padding-left: 0; }
+      .job:hover { padding-left: 0; border-left-color: transparent; }
     }
 
-    /* ---------- Projects ---------- */
+    /* ---------- PROJECTS (featured card style, minimal) ---------- */
     .project {
-      background: var(--bg-elev);
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 1.75rem;
-      margin-bottom: 1.75rem;
-      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+      padding: 2rem;
+      border: 1px solid var(--line-2);
+      border-radius: 6px;
+      margin-bottom: 1.5rem;
+      background: var(--bg-2);
+      transition: all 0.3s cubic-bezier(.2,.7,.2,1);
       position: relative;
     }
     .project:hover {
-      transform: translateY(-4px);
-      border-color: rgba(255,200,87,0.4);
-      box-shadow: 0 10px 30px -15px rgba(255,200,87,0.2);
+      background: var(--bg-3);
+      border-color: var(--line);
+      transform: translateY(-3px);
     }
-    .project-head {
-      display: flex; justify-content: space-between; align-items: flex-start;
-      margin-bottom: 0.8rem;
+    .phead { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; gap: 1rem; }
+    .ptitle {
+      font-size: 1.2rem; font-weight: 600; color: var(--white);
+      text-decoration: none; letter-spacing: -0.01em;
     }
-    .project-title {
-      font-size: 1.25rem; font-weight: 600; color: var(--text);
-      text-decoration: none;
+    .ptitle:hover { text-decoration: underline; text-underline-offset: 3px; }
+    .plinks { display: flex; gap: 0.9rem; flex-shrink: 0; }
+    .plinks a { color: var(--mute); transition: color 0.2s; display: flex; align-items: center; }
+    .plinks a:hover { color: var(--white); }
+    .plinks svg { width: 20px; height: 20px; }
+    .pdesc { color: var(--soft); font-size: 0.95rem; line-height: 1.7; margin-bottom: 1.1rem; }
+    .pstack { display: flex; flex-wrap: wrap; gap: 0.35rem 1rem; }
+    .pstack span { font-family: var(--mono); font-size: 0.75rem; color: var(--mute); }
+    .view-archive {
+      font-family: var(--mono); font-size: 0.85rem; color: var(--soft);
+      text-decoration: none; display: inline-block; margin-top: 1.5rem;
+      transition: color 0.2s, transform 0.2s;
     }
-    .project-title:hover { color: var(--gold); }
-    .project-links { display: flex; gap: 0.8rem; }
-    .project-links a { color: var(--text-soft); transition: color 0.2s ease; display: flex; align-items: center; }
-    .project-links a:hover { color: var(--gold); }
-    .project-links svg { width: 20px; height: 20px; }
-    .project-desc { color: var(--text-soft); font-size: 0.96rem; margin-bottom: 1rem; line-height: 1.6; }
-    .project.featured .project-title { color: var(--gold-bright); }
+    .view-archive:hover { color: var(--white); transform: translateX(4px); }
 
-    /* ---------- Contact ---------- */
-    #contact {
-      text-align: center;
-      max-width: 620px;
-      margin: 0 auto;
-      padding: 8rem 0 6rem;
+    /* ---------- CONTACT ---------- */
+    #contact { text-align: center; max-width: 620px; margin: 0 auto; padding: 8rem 0 4rem; }
+    .over { font-family: var(--mono); color: var(--mute); font-size: 0.88rem; margin-bottom: 1.2rem; }
+    #contact h2 { font-size: clamp(2.2rem, 5vw, 3.75rem); font-weight: 700; color: var(--white); letter-spacing: -0.03em; margin-bottom: 1rem; }
+    #contact p { color: var(--soft); font-size: 1rem; margin-bottom: 3rem; line-height: 1.7; }
+    #contact .btn.primary { padding: 1.2rem 2rem; font-size: 0.92rem; }
+    .clinks { display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; margin-top: 4rem; }
+    .clinks a {
+      font-family: var(--mono); font-size: 0.8rem; color: var(--mute);
+      text-decoration: none; padding: 0.4rem 0;
+      transition: color 0.2s, transform 0.2s;
     }
-    .contact-over { font-family: var(--mono); color: var(--gold); font-size: 0.9rem; margin-bottom: 1rem; }
-    #contact h2 { font-size: clamp(2.2rem, 5vw, 3.5rem); font-weight: 700; color: var(--gold-bright); margin-bottom: 1.2rem; letter-spacing: -0.02em; }
-    #contact p { color: var(--text-soft); font-size: 1.02rem; margin-bottom: 2.5rem; line-height: 1.7; }
-    .contact-links { display: flex; gap: 1.2rem; justify-content: center; flex-wrap: wrap; margin-top: 2.5rem; }
-    .contact-links a {
-      font-family: var(--mono); font-size: 0.82rem;
-      color: var(--text-mute); text-decoration: none;
-      padding: 0.6rem 0.2rem;
-      transition: color 0.2s ease, transform 0.2s ease;
-    }
-    .contact-links a:hover { color: var(--gold); transform: translateY(-2px); }
+    .clinks a:hover { color: var(--white); transform: translateY(-2px); }
 
     footer {
-      text-align: center; padding: 2rem 0 3rem;
-      font-family: var(--mono); font-size: 0.75rem;
-      color: var(--text-mute);
+      text-align: center; padding: 2rem 0 3.5rem; position: relative; z-index: 2;
+      font-family: var(--mono); font-size: 0.72rem; color: var(--mute);
     }
-    footer a { color: var(--text-mute); text-decoration: none; }
-    footer a:hover { color: var(--gold); }
+    footer a { color: var(--mute); text-decoration: none; transition: color 0.2s; }
+    footer a:hover { color: var(--white); }
 
-    /* Selection */
-    ::selection { background: var(--gold); color: var(--bg); }
+    ::selection { background: var(--white); color: var(--bg); }
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--line); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--mute); }
   </style>
 </head>
 <body>
 
-  <div id="bg">
-    <video id="bg-video" muted playsinline webkit-playsinline preload="auto" aria-hidden="true" loop autoplay>
-      <source src="/bg.mp4" type="video/mp4">
-    </video>
-  </div>
-
   <nav id="nav">
     <div class="nav-inner">
-      <a href="#hero" class="nav-mark">HS.</a>
+      <a href="#hero" class="mark">Hammad<span>.</span></a>
       <ul class="nav-links">
         <li><a href="#about"><span class="num">01.</span>About</a></li>
         <li><a href="#experience"><span class="num">02.</span>Experience</a></li>
-        <li><a href="#projects"><span class="num">03.</span>Projects</a></li>
+        <li><a href="#projects"><span class="num">03.</span>Work</a></li>
         <li><a href="#contact"><span class="num">04.</span>Contact</a></li>
-        <li class="nav-resume-wrap"><a href="mailto:hammabdullah@gmail.com" class="nav-resume">Resume</a></li>
+        <li><a href="mailto:hammabdullah@gmail.com" class="resume-btn">Say Hello</a></li>
       </ul>
     </div>
   </nav>
 
   <main>
     <section id="hero">
-      <div class="hero-kicker">Hi, my name is</div>
-      <h1 class="hero-name">Hammad Safi.</h1>
-      <h2 class="hero-tag">I build reliable AI systems.</h2>
-      <p class="hero-bio">
-        I'm a software engineer with an MSc in Advanced Computer Science from the University of Hertfordshire, focused on Python applications, backend APIs, and AI-powered systems. I specialise in
-        <a href="#projects">RAG pipelines, multi-turn agentic applications, and production-grade LLM fine-tuning</a> — building software that holds up under real traffic and solves real problems.
+      <div class="eyebrow">Hi, my name is</div>
+      <h1 class="name">Hammad Safi.</h1>
+      <h2 class="tagline">I build reliable AI systems.</h2>
+      <p class="bio">
+        I'm a software engineer with an MSc in Advanced Computer Science from the University of Hertfordshire, focused on Python, backend APIs, and AI-powered systems. I build production-grade RAG pipelines, multi-turn agentic applications, and LLM fine-tuning workflows — software that holds up under real traffic and solves real problems.
       </p>
-      <div class="cta-row">
-        <a href="#projects" class="btn primary">See my work →</a>
+      <div class="cta">
+        <a href="#projects" class="btn primary">View my work</a>
         <a href="mailto:hammabdullah@gmail.com" class="btn ghost">Get in touch</a>
       </div>
     </section>
 
     <section id="about">
-      <h2 class="section-head"><span class="num">01.</span> About Me</h2>
+      <h2 class="h"><span class="num">01.</span> About Me</h2>
       <p>
-        I enjoy taking fuzzy problems — ambiguous user intent, messy data, latency budgets — and turning them into systems that are predictable, observable, and safe to ship. My background sits between research and production: I've fine-tuned open-weight LLMs on domain tasks, built RAG pipelines that minimise token cost without sacrificing answer quality, and engineered evaluation loops that track semantic correctness in production.
+        I enjoy taking fuzzy problems — ambiguous user intent, messy data, tight latency budgets — and turning them into systems that are predictable, observable, and safe to ship. My work sits between research and production: I've fine-tuned open-weight LLMs on domain tasks, built RAG pipelines that cut token costs without sacrificing answer quality, and designed evaluation loops that track semantic correctness beyond BLEU scores.
       </p>
       <p>
-        More recently I've been deep in agentic systems — designing state machines, fallback rules, and tool-calling paths that don't unravel when users don't behave like the training data. Outside of code, I led a 500+ member engineering society at university and placed as a finalist at the Smart India Hackathon.
+        Recently I've been focused on agentic systems — state machines, fallback rules, and tool-calling paths that don't unravel when users don't behave like the training data. Outside of code, I led a 500+ member engineering society at university and placed as a finalist at the Smart India Hackathon.
       </p>
-      <p>Here are a few technologies I've been working with recently:</p>
-      <ul class="skills-grid">
+      <p>Technologies I've been working with:</p>
+      <ul class="skills">
         <li>Python (FastAPI, Flask)</li>
         <li>PyTorch &amp; HuggingFace</li>
         <li>LangGraph &amp; Pydantic AI</li>
-        <li>RAG (Qdrant, vLLM)</li>
-        <li>LLM fine-tuning / distillation</li>
+        <li>RAG · Qdrant · vLLM</li>
+        <li>LLM fine-tuning &amp; distillation</li>
         <li>DistilBERT &amp; Transformers</li>
         <li>REST APIs &amp; Microservices</li>
-        <li>SQL (MySQL, SQLite) &amp; Firebase</li>
-        <li>Docker &amp; Linux CLI</li>
-        <li>Git, TDD, Agile / Scrum</li>
+        <li>SQL &amp; Firebase</li>
+        <li>Docker · Linux · Git · TDD</li>
       </ul>
     </section>
 
     <section id="experience">
-      <h2 class="section-head"><span class="num">02.</span> Where I've Worked</h2>
+      <h2 class="h"><span class="num">02.</span> Where I've Worked</h2>
 
-      <div class="exp-item">
-        <div class="exp-period">2023 — Present</div>
-        <div class="exp-body">
-          <h3><span class="at"><a href="#">AI Systems &amp; Software Developer</a></span> · Freelance</h3>
+      <div class="job">
+        <div class="period">2023 — Present</div>
+        <div class="jobbody">
+          <h3><a href="#">AI Systems &amp; Software Developer</a> <span class="at">· Freelance</span></h3>
           <div class="sub">United Kingdom</div>
           <ul>
-            <li>Led technical direction and architecture for complex, multi-turn agentic applications, designing state management frameworks and fallback rules for unpredictable real-world user intent.</li>
-            <li>Engineered production-grade RAG pipelines using Python, FastAPI, and vector databases; optimised retrieval to minimise token inference costs and end-to-end latency.</li>
+            <li>Led architecture for multi-turn agentic applications, designing state management frameworks and fallback rules to handle unpredictable real-world user intent.</li>
+            <li>Engineered production-grade RAG pipelines in Python with FastAPI and vector databases; optimised retrieval to reduce token inference costs and end-to-end latency.</li>
             <li>Fine-tuned and distilled open-weight LLMs via PyTorch and HuggingFace for domain-specific intent extraction and deterministic tool-calling.</li>
-            <li>Established automated evaluation loops tracking semantic correctness, classification errors, and user corrections to keep deployments safe in production.</li>
+            <li>Built automated evaluation loops tracking semantic correctness, classification errors, and user corrections to keep deployments safe in production.</li>
           </ul>
-          <div class="tech-chips">
-            <span class="chip">Python</span><span class="chip">FastAPI</span><span class="chip">PyTorch</span><span class="chip">LangGraph</span><span class="chip">Qdrant</span><span class="chip">HuggingFace</span><span class="chip">vLLM</span>
+          <div class="stack">
+            <span>Python</span><span>FastAPI</span><span>PyTorch</span><span>LangGraph</span><span>Qdrant</span><span>HuggingFace</span><span>vLLM</span>
           </div>
         </div>
       </div>
 
-      <div class="exp-item">
-        <div class="exp-period">Jan 2026 — Present</div>
-        <div class="exp-body">
-          <h3><span class="at"><a href="https://entaingroup.com/" target="_blank" rel="noreferrer">Customer Operations Team Member</a></span> · Ladbrokes / Entain</h3>
+      <div class="job">
+        <div class="period">Jan 2026 —</div>
+        <div class="jobbody">
+          <h3><a href="https://entaingroup.com/" target="_blank" rel="noreferrer">Customer Operations</a> <span class="at">· Ladbrokes / Entain</span></h3>
           <div class="sub">United Kingdom</div>
           <ul>
-            <li>Operate within high-volume customer channels requiring real-time exception handling, complex problem-solving, and adherence to rigorous procedures.</li>
-            <li>Communicate clearly with stakeholders to resolve ambiguous operational conflicts safely under time-sensitive constraints.</li>
+            <li>Work within high-volume customer channels requiring real-time exception handling, complex problem-solving, and adherence to rigorous procedures.</li>
+            <li>Resolve ambiguous operational conflicts safely and efficiently under time-sensitive constraints.</li>
           </ul>
         </div>
       </div>
 
-      <div class="exp-item">
-        <div class="exp-period">Apr 2022 — Apr 2025</div>
-        <div class="exp-body">
-          <h3><span class="at"><a href="https://www.amity.edu/" target="_blank" rel="noreferrer">Web Engineering Lead &amp; Graphic Designer</a></span> · Amity University Gurugram</h3>
+      <div class="job">
+        <div class="period">2022 — 2025</div>
+        <div class="jobbody">
+          <h3><a href="https://www.amity.edu/" target="_blank" rel="noreferrer">Web Engineering Lead</a> <span class="at">· Amity University Gurugram</span></h3>
           <div class="sub">India</div>
           <ul>
-            <li>Directed cross-functional alignment with design and student product groups to spec, build, and deploy production-grade responsive web applications.</li>
-            <li>Architected and shipped the Amifest platform, supporting a traffic surge of 6,000+ unique views in 24 hours without service degradation.</li>
-            <li>Mentored junior student engineers on code quality, testing practices, and Git workflows; authored reusable deployment templates adopted across university sub-groups.</li>
+            <li>Directed cross-functional teams to spec, build, and deploy production-grade responsive web applications.</li>
+            <li>Architected and shipped the Amifest platform, supporting 6,000+ unique views within 24 hours without service degradation.</li>
+            <li>Mentored junior engineers on code quality, testing practices, and Git workflows; authored reusable deployment templates.</li>
           </ul>
-          <div class="tech-chips">
-            <span class="chip">Web Architecture</span><span class="chip">Leadership</span><span class="chip">Git</span><span class="chip">TDD</span>
+          <div class="stack">
+            <span>Web Architecture</span><span>Leadership</span><span>Git</span><span>TDD</span>
           </div>
         </div>
       </div>
     </section>
 
     <section id="projects">
-      <h2 class="section-head"><span class="num">03.</span> Things I've Built</h2>
+      <h2 class="h"><span class="num">03.</span> Things I've Built</h2>
 
-      <div class="project featured">
-        <div class="project-head">
-          <a href="https://github.com/HammadBullah/prompt-coaching" target="_blank" rel="noreferrer" class="project-title">PromptAI · Prompt Optimization &amp; Coaching System</a>
-          <div class="project-links">
+      <div class="project">
+        <div class="phead">
+          <a href="https://github.com/HammadBullah/prompt-coaching" target="_blank" rel="noreferrer" class="ptitle">PromptAI · Prompt Optimization &amp; Coaching</a>
+          <div class="plinks">
             <a href="https://github.com/HammadBullah/prompt-coaching" target="_blank" rel="noreferrer" aria-label="GitHub">
               <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.2c-3.3.7-4-1.4-4-1.4-.5-1.4-1.3-1.8-1.3-1.8-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.6.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.7 1.6.3 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.7-5.5 6 .4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3z"/></svg>
             </a>
           </div>
         </div>
-        <p class="project-desc">A Python application that analyses prompts for goal, audience, format, constraints and context, classifies missing information via a DistilBERT multi-label model, and reconstructs improved prompts with language model support. Includes FastAPI endpoints and a database-backed clarification workflow.</p>
-        <div class="tech-chips">
-          <span class="chip">Python</span><span class="chip">FastAPI</span><span class="chip">DistilBERT</span><span class="chip">Qwen</span><span class="chip">SQLite</span><span class="chip">NLP</span>
+        <p class="pdesc">Python application that analyses prompts across goal, audience, format, constraints and context, classifies missing information via a DistilBERT multi-label model, and reconstructs improved prompts through LLM-backed workflows. FastAPI endpoints and SQLite-backed clarification flows.</p>
+        <div class="pstack">
+          <span>Python</span><span>FastAPI</span><span>DistilBERT</span><span>Qwen</span><span>SQLite</span><span>NLP</span>
         </div>
       </div>
 
       <div class="project">
-        <div class="project-head">
-          <a href="https://github.com/HammadBullah/Comparative-AI-Weather-Forecasting" target="_blank" rel="noreferrer" class="project-title">Weather Forecasting &amp; Sequence Prediction</a>
-          <div class="project-links">
+        <div class="phead">
+          <a href="https://github.com/HammadBullah/Comparative-AI-Weather-Forecasting" target="_blank" rel="noreferrer" class="ptitle">Weather Forecasting &amp; Sequence Prediction</a>
+          <div class="plinks">
             <a href="https://github.com/HammadBullah/Comparative-AI-Weather-Forecasting" target="_blank" rel="noreferrer" aria-label="GitHub">
               <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.2c-3.3.7-4-1.4-4-1.4-.5-1.4-1.3-1.8-1.3-1.8-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.6.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.7 1.6.3 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.7-5.5 6 .4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3z"/></svg>
             </a>
           </div>
         </div>
-        <p class="project-desc">Deep-learning sequence modeling (LSTM) alongside classical baselines (Random Forest, ARIMA) on multivariate time-series weather data, with an observable Streamlit dashboard tracking model performance and predictive ranking in live evaluation loops.</p>
-        <div class="tech-chips">
-          <span class="chip">Python</span><span class="chip">LSTM</span><span class="chip">ARIMA</span><span class="chip">Streamlit</span><span class="chip">Time-Series</span>
+        <p class="pdesc">Deep-learning sequence modeling (LSTM) compared against classical baselines (Random Forest, ARIMA) on multivariate time-series weather data, with an observable Streamlit dashboard tracking model performance and live evaluation.</p>
+        <div class="pstack">
+          <span>Python</span><span>LSTM</span><span>ARIMA</span><span>Streamlit</span><span>Time-Series</span>
         </div>
       </div>
 
       <div class="project">
-        <div class="project-head">
-          <a href="https://github.com/HammadBullah?tab=repositories&q=drowning" target="_blank" rel="noreferrer" class="project-title">AI Event Security &amp; Drowning Detection</a>
-          <div class="project-links">
+        <div class="phead">
+          <a href="https://github.com/HammadBullah?tab=repositories&q=drowning" target="_blank" rel="noreferrer" class="ptitle">AI Event Security &amp; Drowning Detection</a>
+          <div class="plinks">
             <a href="https://github.com/HammadBullah?tab=repositories&q=drowning" target="_blank" rel="noreferrer" aria-label="GitHub">
               <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.2c-3.3.7-4-1.4-4-1.4-.5-1.4-1.3-1.8-1.3-1.8-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.6.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.7 1.6.3 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.7-5.5 6 .4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3z"/></svg>
             </a>
           </div>
         </div>
-        <p class="project-desc">Real-time computer vision pipeline using YOLOv9 and TensorFlow to detect drowning events from video streams, with data augmentation and network pruning to keep inference at 32fps / 89% mAP@0.5 for latency-critical edge deployment.</p>
-        <div class="tech-chips">
-          <span class="chip">Python</span><span class="chip">TensorFlow</span><span class="chip">YOLOv9</span><span class="chip">OpenCV</span><span class="chip">CV</span>
+        <p class="pdesc">Real-time computer vision pipeline using YOLOv9 and TensorFlow for drowning detection on live video streams. Data augmentation and network pruning keep inference at 32fps with 89% mAP@0.5 for edge deployment.</p>
+        <div class="pstack">
+          <span>Python</span><span>TensorFlow</span><span>YOLOv9</span><span>OpenCV</span><span>Computer Vision</span>
         </div>
       </div>
 
       <div class="project">
-        <div class="project-head">
-          <a href="#" class="project-title">Cow Linear Trait Measurement (Published Research)</a>
-          <div class="project-links">
-            <a href="https://indianjournals.com/" target="_blank" rel="noreferrer" aria-label="Publication">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        <div class="phead">
+          <span class="ptitle">Cow Linear Trait Measurement <span style="color:var(--mute); font-weight:400;">· Published Research</span></span>
+          <div class="plinks">
+            <a href="https://doi.org/10.33785/IJDS.2026.v79i01.010" target="_blank" rel="noreferrer" aria-label="Publication">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="14" y2="17"/></svg>
             </a>
           </div>
         </div>
-        <p class="project-desc">Deep learning-based approach for detection and measurement of challenging linear traits in Sahiwal cows. Published in the <em>Indian Journal of Dairy Science</em>, Vol. 79(1), 2026 (DOI: 10.33785/IJDS.2026.v79i01.010).</p>
-        <div class="tech-chips">
-          <span class="chip">Deep Learning</span><span class="chip">Computer Vision</span><span class="chip">Research</span>
+        <p class="pdesc">Deep learning-based approach for detection and measurement of challenging linear traits in Sahiwal cows. Published in <em style="color:var(--white);">Indian Journal of Dairy Science</em>, Vol. 79(1), 2026.</p>
+        <div class="pstack">
+          <span>Deep Learning</span><span>Computer Vision</span><span>Research</span>
         </div>
       </div>
+
+      <a href="https://github.com/HammadBullah" target="_blank" rel="noreferrer" class="view-archive">View the full archive →</a>
     </section>
 
     <section id="contact">
-      <div class="contact-over">04. What's Next?</div>
+      <div class="over">04. What's Next?</div>
       <h2>Get in touch.</h2>
-      <p>
-        I'm currently open to AI/software engineering roles and agentic-systems collaborations. Whether you have a role, a project, or just want to talk LLMs, Python, or distributed systems — my inbox is always open.
-      </p>
-      <a href="mailto:hammabdullah@gmail.com" class="btn primary" style="margin: 0 auto;">Say Hello →</a>
-      <div class="contact-links">
+      <p>I'm currently open to AI/software engineering roles and agentic-systems collaborations. Whether you have a role, a project, or just want to talk LLMs and Python — my inbox is open.</p>
+      <a href="mailto:hammabdullah@gmail.com" class="btn primary">Say Hello</a>
+      <div class="clinks">
         <a href="https://github.com/HammadBullah" target="_blank" rel="noreferrer">GitHub</a>
         <a href="https://www.linkedin.com/in/hammad-safi" target="_blank" rel="noreferrer">LinkedIn</a>
         <a href="mailto:hammabdullah@gmail.com">Email</a>
@@ -477,47 +428,30 @@
     </section>
 
     <footer>
-      <p>Designed &amp; built by Hammad Safi · <a href="https://github.com/HammadBullah/HammadBullah.github.io" target="_blank" rel="noreferrer">v5.0</a></p>
+      Designed &amp; built by Hammad Safi · <a href="https://github.com/HammadBullah/HammadBullah.github.io" target="_blank" rel="noreferrer">v6.0</a>
     </footer>
   </main>
 
   <script>
-  (() => {
-    // Video — just loop ambiently, no scroll scrub
-    const video = document.getElementById('bg-video');
-    video.addEventListener('error', () => { video.style.display = 'none'; });
-    // Try play (muted so autoplay is allowed)
-    const tryPlay = () => { video.play().catch(()=>{}); };
-    video.addEventListener('loadeddata', tryPlay, { once: true });
-    tryPlay();
-
-    // Nav scroll state
+    // Nav state
     const nav = document.getElementById('nav');
-    const onScrollNav = () => nav.classList.toggle('scrolled', window.scrollY > 40);
-    window.addEventListener('scroll', onScrollNav, { passive: true });
-    onScrollNav();
+    const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 30);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
 
-    // Section reveal on scroll
-    const sections = document.querySelectorAll('section');
-    const io = new IntersectionObserver(entries => {
-      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-    }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
-    sections.forEach(s => io.observe(s));
-    // Hero shows immediately
-    document.getElementById('hero').classList.add('visible');
-
-    // Smooth anchor clicks (extra safety for some browsers)
-    document.querySelectorAll('a[href^="#"]').forEach(a => {
-      a.addEventListener('click', e => {
-        const id = a.getAttribute('href');
-        if (id.length <= 1) return;
-        const el = document.querySelector(id);
-        if (!el) return;
-        e.preventDefault();
-        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      });
+    // Section reveal
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.style.opacity = 1, e.target.style.transform = 'translateY(0)'; });
+    }, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+    document.querySelectorAll('section').forEach(s => {
+      if (s.id !== 'hero') {
+        s.style.opacity = '0';
+        s.style.transform = 'translateY(24px)';
+        s.style.transition = 'opacity 0.8s cubic-bezier(.2,.7,.2,1), transform 0.8s cubic-bezier(.2,.7,.2,1)';
+      }
+      io.observe(s);
     });
-  })();
+    document.getElementById('hero').style.opacity = 1;
   </script>
 </body>
 </html>
